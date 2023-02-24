@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import { downloadObjectAsJson } from "../static/js/downloadJson";
+
 export default {
   mounted() {
     document
@@ -20,6 +22,8 @@ export default {
           console.log(reader.result);
         };
         reader.readAsText(this.files[0]);
+
+        downloadObjectAsJson({ test: "abc" }, "translations");
       });
   },
 };
