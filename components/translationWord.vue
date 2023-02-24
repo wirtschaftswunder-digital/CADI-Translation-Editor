@@ -1,5 +1,5 @@
 <template>
-  <div>{{ translationKey }}</div>
+  <div class="translation-word">{{ translationKey }}</div>
 </template>
 
 <script>

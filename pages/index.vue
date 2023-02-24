@@ -134,4 +134,8 @@ html {
   padding: 2px 6px;
   background: var(--accent);
 }
+
+.translation-group {
+  margin-left: 24px;
+}
 </style>
