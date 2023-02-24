@@ -1,6 +1,16 @@
 <template>
   <div>
-    <input type="file" id="fileInput" accept=".json" />
+    <!-- Import json -->
+    <label>
+      <span>Load project</span>
+      <input type="file" id="fileInput" accept=".json" />
+    </label>
+
+    <!-- Edit -->
+    <!-- TODO -->
+
+    <!-- Export json -->
+    <button @click="downloadResult">Download</button>
   </div>
 </template>
 
@@ -8,6 +18,12 @@
 import { downloadObjectAsJson } from "../static/js/downloadJson";
 
 export default {
+  data() {
+    return {
+      customTranslations: {},
+    };
+  },
+
   mounted() {
     document
       .getElementById("fileInput")
@@ -21,10 +37,29 @@ export default {
           // when the reader is done, the content is in reader.result.
           console.log(reader.result);
         };
-        reader.readAsText(this.files[0]);
-
-        downloadObjectAsJson({ test: "abc" }, "translations");
+        const str = reader.readAsText(this.files[0]);
+        const obj = JSON.parse(str);
+        if (obj && typeof obj === "object") {
+          this.customTranslations = JSON.parse(JSON.stringify(obj));
+        }
       });
+  },
+
+  methods: {
+    downloadResult() {
+      downloadObjectAsJson(this.customTranslations, "translations");
+    },
   },
 };
 </script>
+
+<style lang="css">
+html {
+  --accent: #0084ff;
+}
+
+.btn {
+  padding: 2px 6px;
+  background: var(--accent);
+}
+</style>
