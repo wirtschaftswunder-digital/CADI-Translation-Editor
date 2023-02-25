@@ -14,13 +14,23 @@ export function getDefaultTranslations() {
 }
 
 
-export function flattenCustomTranslations(obj) {
-    // TODO
-    return JSON.parse(JSON.stringify(obj))
+export function flattenTranslations(obj) {
+    const result = {}
+
+    const insertValue = ([entryKey, entryValue], path) => {
+        const p = path === "" ? entryKey : `${path}.${entryKey}`
+        if (entryValue && typeof entryValue === "object")
+            Object.entries(entryValue).forEach((c) => insertValue(c, p))
+        else
+            result[p] = entryValue
+    }
+
+    Object.entries(obj).forEach((entry) => insertValue(entry, ""))
+    return result
 }
 
 
-export function nestCustomTranslations(obj) {
+export function nestTranslations(obj) {
     // TODO
     return obj
 }

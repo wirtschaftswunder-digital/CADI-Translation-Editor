@@ -28,12 +28,17 @@
           :translationKey="key"
           :path="path"
         >
-          <td v-for="(iso, index) in languages" :key="iso">
-            <input
-              type="text"
-              :value="customTranslations[`${iso}.${path}`]"
-              @input="updateTranslation(iso, path, $event)"
-            />
+          <td v-if="!isParent" v-for="(iso, index) in languages" :key="iso">
+            <translation-word
+              :originalTranslation="defaultTranslationsFlat[`${iso}.${path}`]"
+              :customTranslation="customTranslations[`${iso}.${path}`]"
+            >
+              <input
+                type="text"
+                :value="customTranslations[`${iso}.${path}`]"
+                @input="updateTranslation(iso, path, $event)"
+              />
+            </translation-word>
           </td>
         </translationRow>
       </table>
@@ -52,8 +57,8 @@ import { downloadObjectAsJson } from "../static/js/downloadJson";
 import {
   getLanguages,
   setDefaultTranslations,
-  flattenCustomTranslations,
-  nestCustomTranslations,
+  flattenTranslations,
+  nestTranslations,
 } from "../static/js/main";
 import translationRow from "../components/translationRow.vue";
 
@@ -64,6 +69,7 @@ export default {
       languages: getLanguages(),
       translationKeys: null,
       defaultTranslations: null,
+      defaultTranslationsFlat: {},
     };
   },
 
@@ -88,8 +94,8 @@ export default {
           const str = reader.result; //reader.readAsText(this.files[0]);
           const obj = JSON.parse(str);
           if (obj && typeof obj === "object") {
-            thisRef.loadedCustomTranslations = flattenCustomTranslations(obj);
-            thisRef.customTranslations = flattenCustomTranslations(obj);
+            thisRef.loadedCustomTranslations = flattenTranslations(obj);
+            thisRef.customTranslations = flattenTranslations(obj);
             console.log(thisRef.customTranslations);
             thisRef.setTranslationKeys();
           }
@@ -100,7 +106,8 @@ export default {
 
   methods: {
     downloadResult() {
-      const obj = nestCustomTranslations(this.customTranslations);
+      // TODO filter (original != custom translation)
+      const obj = nestTranslations(this.customTranslations);
       downloadObjectAsJson(obj, "translations");
     },
     async loadDefaultTranslations() {
@@ -123,6 +130,7 @@ export default {
     },
     setDefaultTranslations(value) {
       setDefaultTranslations(value);
+      this.defaultTranslationsFlat = flattenTranslations(value || {});
       this.defaultTranslations = value;
     },
     setTranslationKeys() {
@@ -137,6 +145,7 @@ export default {
         };
         if (entryValue && typeof entryValue === "object")
           result.children = getChildren(entryValue, path);
+        else result.original = entryValue;
         return result;
       };
 
@@ -157,6 +166,7 @@ export default {
             entry.children.forEach(addRowsForEntry);
           } else {
             // is leaf node
+            row.original = entry.original;
             rows.push(row);
           }
         };
@@ -174,6 +184,7 @@ export default {
     },
     updateTranslation(iso, path, event) {
       this.customTranslations[`${iso}.${path}`] = event.target.value;
+      this.customTranslations = { ...this.customTranslations }; // JSON.parse(JSON.stringify(this.customTranslations))
     },
   },
 
