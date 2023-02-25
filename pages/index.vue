@@ -15,15 +15,20 @@
       <br />
 
       <!-- Edit -->
-      <div v-if="translationKeys">
-        <div v-for="{ key, children, path } in translationKeys" :key="key">
-          <translationRow
-            :translationKey="key"
-            :children="children"
-            :path="path"
-          />
-        </div>
-      </div>
+      <table v-if="translationKeys && translationRows">
+        <thead>
+          <th>Key</th>
+          <th v-for="iso in languages" :key="iso">{{ iso }}</th>
+        </thead>
+        <tbody></tbody>
+        <translationRow
+          v-for="{ key, isParent, path } in translationRows"
+          :key="path"
+          :isParent="isParent"
+          :translationKey="key"
+          :path="path"
+        />
+      </table>
 
       <!-- Export json -->
       <br />
@@ -117,9 +122,26 @@ export default {
       const getChildren = (obj, path) =>
         Object.entries(obj).map((entry) => getValueForEntry(entry, path));
 
+      let rows = null;
       if (this.defaultTranslations) {
+        rows = [];
         this.translationKeys = getChildren(this.defaultTranslations.de, "");
+        // flatten translationKeys ==> rows
+        const addRowsForEntry = (entry) => {
+          const row = { key: entry.key, path: entry.path, isParent: false };
+          if (entry.children) {
+            // is parent node
+            row.isParent = true;
+            rows.push(row);
+            entry.children.forEach(addRowsForEntry);
+          } else {
+            // is leaf node
+            rows.push(row);
+          }
+        };
+        this.translationKeys.forEach(addRowsForEntry)
       } else this.translationKeys = null;
+      this.translationRows = rows;
     },
   },
 
