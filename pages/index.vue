@@ -27,8 +27,18 @@
           :isParent="isParent"
           :translationKey="key"
           :path="path"
-        />
+        >
+          <td v-for="(iso, index) in languages" :key="iso">
+            <input
+              type="text"
+              :value="customTranslations[`${iso}.${path}`]"
+              @input="updateTranslation(iso, path, $event)"
+            />
+          </td>
+        </translationRow>
       </table>
+
+      {{ customTranslations }}
 
       <!-- Export json -->
       <br />
@@ -39,7 +49,12 @@
 
 <script>
 import { downloadObjectAsJson } from "../static/js/downloadJson";
-import { getLanguages, setDefaultTranslations } from "../static/js/main";
+import {
+  getLanguages,
+  setDefaultTranslations,
+  flattenCustomTranslations,
+  nestCustomTranslations,
+} from "../static/js/main";
 import translationRow from "../components/translationRow.vue";
 
 export default {
@@ -58,6 +73,7 @@ export default {
 
   mounted() {
     // listener for file import
+    const thisRef = this;
     document
       .getElementById("fileInput")
       .addEventListener("change", function selectedFileChanged() {
@@ -68,19 +84,24 @@ export default {
         const reader = new FileReader();
         reader.onload = function fileReadCompleted() {
           // when the reader is done, the content is in reader.result.
-          console.log(reader.result);
+          //console.log(reader.result);
+          const str = reader.result; //reader.readAsText(this.files[0]);
+          const obj = JSON.parse(str);
+          if (obj && typeof obj === "object") {
+            thisRef.loadedCustomTranslations = flattenCustomTranslations(obj);
+            thisRef.customTranslations = flattenCustomTranslations(obj);
+            console.log(thisRef.customTranslations);
+            thisRef.setTranslationKeys();
+          }
         };
-        const str = reader.readAsText(this.files[0]);
-        const obj = JSON.parse(str);
-        if (obj && typeof obj === "object") {
-          this.customTranslations = JSON.parse(JSON.stringify(obj));
-        }
+        reader.readAsText(this.files[0]);
       });
   },
 
   methods: {
     downloadResult() {
-      downloadObjectAsJson(this.customTranslations, "translations");
+      const obj = nestCustomTranslations(this.customTranslations);
+      downloadObjectAsJson(obj, "translations");
     },
     async loadDefaultTranslations() {
       this.setDefaultTranslations(null);
@@ -139,9 +160,20 @@ export default {
             rows.push(row);
           }
         };
-        this.translationKeys.forEach(addRowsForEntry)
+        this.translationKeys.forEach(addRowsForEntry);
+        this.languages.forEach((iso) => {
+          rows.forEach(({ isParent, path }) => {
+            if (!isParent) {
+              const k = `${iso}.${path}`;
+              this.customTranslations[k] = this.customTranslations[k] || "";
+            }
+          });
+        });
       } else this.translationKeys = null;
       this.translationRows = rows;
+    },
+    updateTranslation(iso, path, event) {
+      this.customTranslations[`${iso}.${path}`] = event.target.value;
     },
   },
 

@@ -12,3 +12,15 @@ export function setDefaultTranslations(value) {
 export function getDefaultTranslations() {
     return defaultTranslations
 }
+
+
+export function flattenCustomTranslations(obj) {
+    // TODO
+    return JSON.parse(JSON.stringify(obj))
+}
+
+
+export function nestCustomTranslations(obj) {
+    // TODO
+    return obj
+}
