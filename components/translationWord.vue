@@ -1,16 +1,24 @@
 <template>
   <div>
-    {{ originalTranslation }}
-    <button>
+    <button @click="showEdit = true">
       {{ currentTranslation }}
     </button>
-    <slot></slot>
+    <div v-if="showEdit">
+      {{ originalTranslation }}
+      <slot></slot>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   props: ["originalTranslation", "customTranslation"],
+
+  data() {
+    return {
+      showEdit: false,
+    };
+  },
 
   computed: {
     currentTranslation() {
