@@ -12,6 +12,7 @@
         <input type="file" id="fileInput" accept=".json" />
       </label>
       <br />
+      <br />
 
       <!-- Edit -->
       <div v-if="translationKeys">
@@ -33,13 +34,14 @@
 
 <script>
 import { downloadObjectAsJson } from "../static/js/downloadJson";
+import { getLanguages, setDefaultTranslations } from "../static/js/main";
 import translationRow from "../components/translationRow.vue";
 
 export default {
   data() {
     return {
       customTranslations: {},
-      languages: ["de", "en"],
+      languages: getLanguages(),
       translationKeys: null,
       defaultTranslations: null,
     };
@@ -76,7 +78,7 @@ export default {
       downloadObjectAsJson(this.customTranslations, "translations");
     },
     async loadDefaultTranslations() {
-      this.defaultTranslations = null;
+      this.setDefaultTranslations(null);
       const baseUrl =
         "https://main.d1u2qdrqduf5v6.amplifyapp.com/translations/";
       const urls = this.languages.map(
@@ -90,8 +92,12 @@ export default {
         const data = typeof rawData === "string" ? JSON.parse(data) : rawData;
         result[iso] = data;
       });
-      this.defaultTranslations = result;
+      this.setDefaultTranslations(result);
       this.setTranslationKeys();
+    },
+    setDefaultTranslations(value) {
+      setDefaultTranslations(value);
+      this.defaultTranslations = value;
     },
     setTranslationKeys() {
       const getValueForEntry = (entry, currentPath) => {
@@ -128,6 +134,12 @@ export default {
 <style lang="css">
 html {
   --accent: #0084ff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+
+body {
+  padding: 1rem;
 }
 
 .btn {
