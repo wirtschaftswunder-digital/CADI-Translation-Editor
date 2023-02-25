@@ -17,8 +17,6 @@
 
 <script>
 export default {
-  name: "translation-row",
-
   props: ["translationKey", "children", "path"],
 };
 </script>

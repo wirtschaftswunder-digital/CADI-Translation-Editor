@@ -82,7 +82,7 @@ export default {
       const urls = this.languages.map(
         (iso) => `${baseUrl}${iso}/translations.json`
       );
-      const requests = urls.map(this.$axios.get);
+      const requests = urls.map((url) => this.$axios.get(url));
       const requestResults = await Promise.all(requests);
       const result = {};
       this.languages.forEach((iso, index) => {

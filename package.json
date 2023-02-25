@@ -5,7 +5,7 @@
         "build": "nuxt build",
         "generate": "nuxt generate",
         "start": "nuxt start",
-        "deploy": "gh-pages -d dist"
+        "deploy": "gh-pages -d dist -t true"
     },
     "dependencies": {
         "@nuxtjs/axios": "^5.13.6",
