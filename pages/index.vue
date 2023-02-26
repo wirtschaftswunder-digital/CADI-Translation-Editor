@@ -252,6 +252,10 @@ export default {
 </script>
 
 <style lang="css">
+html {
+  font-size: 14px;
+}
+
 body {
   --accent: #0084ff;
   --light-text: #8c8c8c;
