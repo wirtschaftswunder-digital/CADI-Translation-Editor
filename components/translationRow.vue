@@ -85,7 +85,7 @@ export default {
 }
 
 .translation-row:nth-child(odd) {
-  background: #dcdcdc30;
+  background: var(--bg-accent);
 }
 
 .translation-row:hover {

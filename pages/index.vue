@@ -7,35 +7,46 @@
     <!-- editor -->
     <div v-show="!isLoading" style="display: grid; gap: 5rem">
       <!-- Import json -->
-      <label>
-        <span>Load project</span>
-        <input type="file" id="fileInput" accept=".json" />
-      </label>
+      <div>
+        <h2>Step 1: Load project (optional)</h2>
+        <label for="fileInput">
+          <p>
+            Load your current custom translations .json file to continue
+            editing.
+          </p>
+        </label>
+        <input type="file" name="fileInput" id="fileInput" accept=".json" />
+      </div>
 
       <!-- Edit -->
-      <table v-if="translationKeys && translationRows" id="edit-table">
-        <thead>
-          <th>Key</th>
-          <th v-for="iso in languages" :key="iso" class="iso">{{ iso }}</th>
-        </thead>
-        <tbody>
-          <translationRow
-            v-for="{ key, isParent, path } in translationRows"
-            :key="path"
-            :isParent="isParent"
-            :translationKey="key"
-            :path="path"
-            @open-edit="isParent ? null : openEdit(path)"
-          >
-            <td v-if="!isParent" v-for="iso in languages" :key="iso">
-              <current-word-translation
-                :originalTranslation="defaultTranslationsFlat[`${iso}.${path}`]"
-                :customTranslation="customTranslations[`${iso}.${path}`]"
-              />
-            </td>
-          </translationRow>
-        </tbody>
-      </table>
+      <div>
+        <h2>Step 2: Edit translations</h2>
+        <table v-if="translationKeys && translationRows" id="edit-table">
+          <thead>
+            <th>Key</th>
+            <th v-for="iso in languages" :key="iso" class="iso">{{ iso }}</th>
+          </thead>
+          <tbody>
+            <translationRow
+              v-for="{ key, isParent, path } in translationRows"
+              :key="path"
+              :isParent="isParent"
+              :translationKey="key"
+              :path="path"
+              @open-edit="isParent ? null : openEdit(path)"
+            >
+              <td v-if="!isParent" v-for="iso in languages" :key="iso">
+                <current-word-translation
+                  :originalTranslation="
+                    defaultTranslationsFlat[`${iso}.${path}`]
+                  "
+                  :customTranslation="customTranslations[`${iso}.${path}`]"
+                />
+              </td>
+            </translationRow>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Edit window for one key -->
       <div v-if="editWordPath" id="edit-word-window-wrapper">
@@ -87,6 +98,13 @@
 
       <!-- Export json -->
       <div>
+        <h2>Step 3: Download results</h2>
+        <p style="max-width: 540px">
+          Download the output file, which contains your custom translations.
+          Upload it on your website and make sure to provide your booking mask
+          frontend code with the relative path to the uploaded custom
+          translations file.
+        </p>
         <button class="btn" @click="downloadResult">Download</button>
       </div>
     </div>
@@ -264,6 +282,7 @@ body {
   --light-text: #8c8c8c;
   --medium-text: #495057;
   --input-bg: #f3f3f3;
+  --bg-accent: #dcdcdc30;
   padding: 1rem;
   font-family: Roboto, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -371,5 +390,30 @@ textarea:-ms-input-placeholder {
 textarea::-ms-input-placeholder {
   /* Microsoft Edge */
   color: var(--placeholder-col);
+}
+
+input[type="file"] {
+  background-color: var(--bg-accent);
+  border: 1px solid var(--light-text);
+  border-radius: 4px;
+  height: 40px;
+  width: 500px;
+  color: black;
+}
+input[type="file"]::file-selector-button {
+  border: none;
+  border-radius: 4px;
+  color: white;
+  background-color: black;
+  border: 1px solid black;
+  height: 40px;
+  cursor: pointer;
+  transition: all 0.25s ease-in;
+  cursor: pointer;
+}
+input[type="file"]::file-selector-button:hover {
+  background-color: #fff;
+  color: black;
+  transition: all 0.25s ease-in;
 }
 </style>
