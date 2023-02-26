@@ -1,9 +1,10 @@
 <template>
-  <tr class="translation-row" @click="$emit('open-edit')">
-    <td
-      :class="{ 'parent-key': isParent }"
-      class="translation-key"
-    >
+  <tr
+    class="translation-row"
+    :class="{ 'parent-key': isParent }"
+    @click="$emit('open-edit')"
+  >
+    <td :class="{ 'parent-key': isParent }" class="translation-key">
       <span :style="{ 'padding-left': paddingLeft }">
         {{ translationKey }}
       </span>
@@ -45,7 +46,9 @@ export default {
 .translation-row {
   cursor: pointer;
 }
-
+.translation-row.parent-key {
+  cursor: default;
+}
 .translation-row td,
 #edit-table th {
   padding: 1rem 0.5rem;
