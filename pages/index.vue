@@ -334,6 +334,9 @@ h6 {
 
 #edit-table thead th {
   text-align: left;
+  top: 0;
+  position: sticky;
+  background: white;
 }
 
 textarea,
