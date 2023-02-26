@@ -15,10 +15,10 @@
       <br />
 
       <!-- Edit -->
-      <table v-if="translationKeys && translationRows">
+      <table v-if="translationKeys && translationRows" id="edit-table">
         <thead>
           <th>Key</th>
-          <th v-for="iso in languages" :key="iso">{{ iso }}</th>
+          <th v-for="iso in languages" :key="iso" class="iso">{{ iso }}</th>
         </thead>
         <tbody>
           <translationRow
@@ -40,28 +40,40 @@
       </table>
 
       <!-- Edit window for one key -->
-      <div v-if="editWordPath" id="edit-word-window">
-        <translation-word
-          v-for="iso in languages"
-          :key="iso"
-          :originalTranslation="
-            defaultTranslationsFlat[`${iso}.${editWordPath}`]
-          "
-          :customTranslation="customTranslations[`${iso}.${editWordPath}`]"
-        >
-          <input
-            type="text"
-            :value="customTranslations[`${iso}.${editWordPath}`]"
-            @input="updateTranslation(iso, editWordPath, $event)"
-          />
-        </translation-word>
+      <div v-if="editWordPath" id="edit-word-window-wrapper">
+        <div
+          @click="closeEdit"
+          style="display: absolut; left: 0; top: 0; width: 100%; height: 100%"
+        ></div>
+        <div id="edit-word-window-container">
+          <div>
+            <translation-word
+              v-for="iso in languages"
+              :key="iso"
+              :iso="iso"
+              :originalTranslation="
+                defaultTranslationsFlat[`${iso}.${editWordPath}`]
+              "
+              :customTranslation="customTranslations[`${iso}.${editWordPath}`]"
+            >
+              <input
+                type="text"
+                :value="customTranslations[`${iso}.${editWordPath}`]"
+                @input="updateTranslation(iso, editWordPath, $event)"
+              />
+            </translation-word>
+            <div style="display: flex; justify-content: flex-end">
+              <button class="btn" @click="closeEdit">Ok</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {{ customTranslations }}
 
       <!-- Export json -->
       <br />
-      <button @click="downloadResult">Download</button>
+      <button class="btn" @click="downloadResult">Download</button>
     </div>
   </div>
 </template>
@@ -144,8 +156,10 @@ export default {
       this.setTranslationKeys();
     },
     openEdit(path) {
-      console.log("ss");
       this.editWordPath = path;
+    },
+    closeEdit() {
+      this.editWordPath = null;
     },
     setDefaultTranslations(value) {
       setDefaultTranslations(value);
@@ -227,11 +241,59 @@ body {
 }
 
 .btn {
-  padding: 2px 6px;
+  padding: 4px 12px;
   background: var(--accent);
+  border-radius: 0.2rem;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+.iso {
+  text-transform: uppercase;
 }
 
 .translation-group {
   margin-left: 24px;
+}
+
+#edit-word-window-wrapper {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(5px);
+}
+
+#edit-word-window-container {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+  pointer-events: none;
+}
+
+#edit-word-window-container > div {
+  max-width: 640px;
+  margin-left: 5vmin;
+  margin-right: 5vmin;
+  pointer-events: all;
+  background: white;
+  padding: 1rem 2.5rem;
+  border-radius: 1rem;
+  display: grid;
+  gap: 3rem;
+}
+
+#edit-table thead th {
+  text-align: left;
 }
 </style>
