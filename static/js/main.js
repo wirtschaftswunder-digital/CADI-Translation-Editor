@@ -30,7 +30,26 @@ export function flattenTranslations(obj) {
 }
 
 
-export function nestTranslations(obj) {
-    // TODO
-    return obj
+export function nestTranslations(data) {
+    if (Array.isArray(data) || Object(data) !== data)
+        return data;
+    const result = {};
+    let cur, prop, idx, last, temp;
+    for (const p of Object.keys(data)) {
+        cur = result;
+        prop = "";
+        last = 0;
+        do {
+            idx = p.indexOf(".", last);
+            temp = p.substring(last, idx !== -1 ? idx : undefined);
+            if (!cur[prop]) {
+                cur[prop] = (!isNaN(parseInt(temp)) ? [] : {});
+            }
+            cur = cur[prop]
+            prop = temp;
+            last = idx + 1;
+        } while (idx >= 0);
+        cur[prop] = data[p];
+    }
+    return result[""];
 }
