@@ -62,6 +62,9 @@
                   cols="16"
                   style="min-width: 200px"
                   :value="customTranslations[`${iso}.${editWordPath}`]"
+                  :placeholder="
+                    defaultTranslationsFlat[`${iso}.${editWordPath}`]
+                  "
                   @input="updateTranslation(iso, editWordPath, $event)"
                 />
               </translation-word>
@@ -352,5 +355,21 @@ textarea,
   border-radius: 0.25rem;
   overflow: auto;
   resize: vertical;
+}
+textarea {
+  --placeholder-col: var(--light-text);
+}
+textarea::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: var(--placeholder-col);
+  opacity: 1; /* Firefox */
+}
+textarea:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: var(--placeholder-col);
+}
+textarea::-ms-input-placeholder {
+  /* Microsoft Edge */
+  color: var(--placeholder-col);
 }
 </style>
