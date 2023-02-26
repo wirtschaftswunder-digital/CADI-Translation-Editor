@@ -338,6 +338,7 @@ h6 {
 
 textarea,
 .original-translation {
+  font-family: inherit;
   border: none;
   background: #f3f3f3;
   padding: 0.375rem 0.75rem;
