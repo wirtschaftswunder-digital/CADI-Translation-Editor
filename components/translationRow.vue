@@ -1,5 +1,5 @@
 <template>
-  <tr>
+  <tr @click="$emit('open-edit')">
     <td
       :class="{ 'parent-key': isParent }"
       class="translation-key"
@@ -8,8 +8,6 @@
       {{ translationKey }}
     </td>
     <slot></slot>
-
-
   </tr>
 </template>
 
@@ -19,7 +17,7 @@ import { getLanguages } from "../static/js/main";
 export default {
   props: ["translationKey", "isParent", "path", "value"],
 
-  emits: ["input"],
+  emits: ["input", "open-edit"],
 
   data() {
     return {

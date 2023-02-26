@@ -20,28 +20,42 @@
           <th>Key</th>
           <th v-for="iso in languages" :key="iso">{{ iso }}</th>
         </thead>
-        <tbody></tbody>
-        <translationRow
-          v-for="{ key, isParent, path } in translationRows"
-          :key="path"
-          :isParent="isParent"
-          :translationKey="key"
-          :path="path"
-        >
-          <td v-if="!isParent" v-for="(iso, index) in languages" :key="iso">
-            <translation-word
-              :originalTranslation="defaultTranslationsFlat[`${iso}.${path}`]"
-              :customTranslation="customTranslations[`${iso}.${path}`]"
-            >
-              <input
-                type="text"
-                :value="customTranslations[`${iso}.${path}`]"
-                @input="updateTranslation(iso, path, $event)"
+        <tbody>
+          <translationRow
+            v-for="{ key, isParent, path } in translationRows"
+            :key="path"
+            :isParent="isParent"
+            :translationKey="key"
+            :path="path"
+            @open-edit="isParent ? null : openEdit(path)"
+          >
+            <td v-if="!isParent" v-for="iso in languages" :key="iso">
+              <current-word-translation
+                :originalTranslation="defaultTranslationsFlat[`${iso}.${path}`]"
+                :customTranslation="customTranslations[`${iso}.${path}`]"
               />
-            </translation-word>
-          </td>
-        </translationRow>
+            </td>
+          </translationRow>
+        </tbody>
       </table>
+
+      <!-- Edit window for one key -->
+      <div v-if="editWordPath" id="edit-word-window">
+        <translation-word
+          v-for="iso in languages"
+          :key="iso"
+          :originalTranslation="
+            defaultTranslationsFlat[`${iso}.${editWordPath}`]
+          "
+          :customTranslation="customTranslations[`${iso}.${editWordPath}`]"
+        >
+          <input
+            type="text"
+            :value="customTranslations[`${iso}.${editWordPath}`]"
+            @input="updateTranslation(iso, editWordPath, $event)"
+          />
+        </translation-word>
+      </div>
 
       {{ customTranslations }}
 
@@ -70,6 +84,7 @@ export default {
       translationKeys: null,
       defaultTranslations: null,
       defaultTranslationsFlat: {},
+      editWordPath: null,
     };
   },
 
@@ -127,6 +142,10 @@ export default {
       });
       this.setDefaultTranslations(result);
       this.setTranslationKeys();
+    },
+    openEdit(path) {
+      console.log("ss");
+      this.editWordPath = path;
     },
     setDefaultTranslations(value) {
       setDefaultTranslations(value);
