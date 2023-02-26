@@ -145,8 +145,18 @@ export default {
 
   methods: {
     downloadResult() {
-      // TODO filter (original != custom translation)
-      const obj = nestTranslations(this.customTranslations);
+      // filter (original != custom translation)
+      const editedCustomTranslations = {};
+      Object.entries(this.customTranslations).forEach(([key, value]) => {
+        const transformedValue = String(value || "").trim();
+        if (
+          transformedValue.length > 0 &&
+          key in this.defaultTranslationsFlat &&
+          transformedValue != this.defaultTranslationsFlat[key]
+        )
+          editedCustomTranslations[key] = transformedValue;
+      });
+      const obj = nestTranslations(editedCustomTranslations);
       downloadObjectAsJson(obj, "translations");
     },
     async loadDefaultTranslations() {
