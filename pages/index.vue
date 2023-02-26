@@ -1,11 +1,15 @@
 <template>
-  <div>
-    <h1>CADI Translation Editor</h1>
+  <div id="wrapper">
+    <div v-if="isLoading">
+      <h1>CADI Translation Editor</h1>
 
-    <p v-if="isLoading">Loading...</p>
+      <p>Loading...</p>
+    </div>
 
     <!-- editor -->
     <div v-show="!isLoading" style="display: grid; gap: 5rem">
+      <h1>CADI Translation Editor</h1>
+
       <!-- Import json -->
       <div>
         <h2>Step 1: Load project (optional)</h2>
@@ -287,6 +291,13 @@ body {
   font-family: Roboto, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   color: var(--light-text);
+}
+
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 10rem;
 }
 
 h1,
