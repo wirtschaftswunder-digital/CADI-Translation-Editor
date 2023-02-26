@@ -80,8 +80,8 @@ export default {
   transform-origin: center;
   left: var(--depth-in-px);
   width: 17px;
-  border-left: 2px solid var(--line-color);
-  border-bottom: 2px solid var(--line-color);
+  border-left: 1px solid var(--line-color);
+  border-bottom: 1px solid var(--line-color);
 }
 
 .translation-row:nth-child(odd) {
@@ -95,7 +95,7 @@ export default {
 .depth-line {
   content: "";
   height: 100%;
-  border-left: 2px solid var(--line-color);
+  border-left: 1px solid var(--line-color);
   top: 0;
   left: var(--depth-in-px-2);
   position: absolute;
