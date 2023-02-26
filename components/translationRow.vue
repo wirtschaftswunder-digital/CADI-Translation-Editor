@@ -57,6 +57,10 @@ export default {
   font-weight: bold;
 }
 
+.translation-row > td{
+  max-width: 540px;
+}
+
 .translation-row {
   --line-color: var(--light-text);
   cursor: pointer;
