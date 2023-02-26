@@ -5,14 +5,12 @@
     <p v-if="isLoading">Loading...</p>
 
     <!-- editor -->
-    <div v-show="!isLoading">
+    <div v-show="!isLoading" style="display: grid; gap: 5rem">
       <!-- Import json -->
       <label>
         <span>Load project</span>
         <input type="file" id="fileInput" accept=".json" />
       </label>
-      <br />
-      <br />
 
       <!-- Edit -->
       <table v-if="translationKeys && translationRows" id="edit-table">
@@ -47,33 +45,47 @@
         ></div>
         <div id="edit-word-window-container">
           <div>
-            <translation-word
-              v-for="iso in languages"
-              :key="iso"
-              :iso="iso"
-              :originalTranslation="
-                defaultTranslationsFlat[`${iso}.${editWordPath}`]
+            <table>
+              <translation-word
+                v-for="iso in languages"
+                :key="iso"
+                :iso="iso"
+                :originalTranslation="
+                  defaultTranslationsFlat[`${iso}.${editWordPath}`]
+                "
+                :customTranslation="
+                  customTranslations[`${iso}.${editWordPath}`]
+                "
+              >
+                <textarea
+                  rows="5"
+                  cols="16"
+                  style="min-width: 200px"
+                  :value="customTranslations[`${iso}.${editWordPath}`]"
+                  @input="updateTranslation(iso, editWordPath, $event)"
+                />
+              </translation-word>
+            </table>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
               "
-              :customTranslation="customTranslations[`${iso}.${editWordPath}`]"
             >
-              <input
-                type="text"
-                :value="customTranslations[`${iso}.${editWordPath}`]"
-                @input="updateTranslation(iso, editWordPath, $event)"
-              />
-            </translation-word>
-            <div style="display: flex; justify-content: flex-end">
+              <span style="margin-right: 2rem; font-size: small"
+                >Changes get automatically saved</span
+              >
               <button class="btn" @click="closeEdit">Ok</button>
             </div>
           </div>
         </div>
       </div>
 
-      {{ customTranslations }}
-
       <!-- Export json -->
-      <br />
-      <button class="btn" @click="downloadResult">Download</button>
+      <div>
+        <button class="btn" @click="downloadResult">Download</button>
+      </div>
     </div>
   </div>
 </template>
@@ -230,19 +242,30 @@ export default {
 </script>
 
 <style lang="css">
-html {
+body {
   --accent: #0084ff;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  --light-text: #8c8c8c;
+  --medium-text: #495057;
+  --input-bg: #f3f3f3;
+  padding: 1rem;
+  font-family: Roboto, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  color: var(--light-text);
 }
 
-body {
-  padding: 1rem;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: black;
 }
 
 .btn {
-  padding: 4px 12px;
-  background: var(--accent);
+  height: 40px;
+  padding: 8px 12px;
+  background: black;
   border-radius: 0.2rem;
   color: white;
   font-weight: bold;
@@ -288,12 +311,28 @@ body {
   pointer-events: all;
   background: white;
   padding: 1rem 2.5rem;
-  border-radius: 1rem;
-  display: grid;
-  gap: 3rem;
+  border-radius: 0.25rem;
+}
+
+#edit-table {
+  color: var(--medium-text);
 }
 
 #edit-table thead th {
   text-align: left;
+}
+
+textarea,
+.original-translation {
+  border: none;
+  background: #f3f3f3;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--medium-text);
+  border-radius: 0.25rem;
+  overflow: auto;
+  resize: vertical;
 }
 </style>
