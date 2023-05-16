@@ -1,5 +1,5 @@
 export function getLanguages() {
-    return ["de", "en"]
+    return ["de", "en", "fr", "it", "es"]
 }
 
 
