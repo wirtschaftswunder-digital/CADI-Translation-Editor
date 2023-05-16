@@ -139,15 +139,32 @@
       </div>
 
       <!-- Export json -->
-      <div>
+      <div style="max-width: 540px">
         <h2>Step 3: Download results</h2>
-        <p style="max-width: 540px">
+        <p>
           Download the output file, which contains your custom translations.
           Upload it on your website and make sure to provide your booking mask
           frontend code with the relative path to the uploaded custom
           translations file.
         </p>
-        <button class="btn" @click="downloadResult">Download</button>
+        <div style="display: flex; justify-content: space-between">
+          <button class="btn" @click="downloadResult">Download</button>
+          <div style="display: flex; flex-wrap: nowrap">
+            <span
+              style="margin-right: 6px; margin-top: auto; margin-bottom: auto; font-weight: 500;"
+              >Download source file:</span
+            >
+            <button
+              v-for="iso in languages"
+              :key="iso"
+              @click="downloadResultAsSourceFile(iso)"
+              class="iso btn"
+              style="margin-left: 4px"
+            >
+              {{ iso }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -312,6 +329,19 @@ export default {
         if (x === iso) return !isAlreadyInList;
         else return this.languages.includes(x);
       });
+    },
+    downloadResultAsSourceFile(iso) {
+      const translations = {};
+      Object.entries(this.customTranslations).forEach(([key, value]) => {
+        if (!key.startsWith(iso)) return null;
+        const transformedValue = String(value || "").trim();
+        translations[key] =
+          transformedValue.length > 0
+            ? transformedValue
+            : this.defaultTranslationsFlat[key];
+      });
+      const obj = nestTranslations(translations);
+      downloadObjectAsJson(obj, iso);
     },
   },
 
