@@ -31,6 +31,7 @@ export function flattenTranslations(obj) {
 
 
 export function nestTranslations(data) {
+    console.warn(data);
     if (Array.isArray(data) || Object(data) !== data)
         return data;
     const result = {};

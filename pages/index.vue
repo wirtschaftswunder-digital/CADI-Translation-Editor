@@ -25,6 +25,19 @@
       <!-- Edit -->
       <div>
         <h2>Step 2: Edit translations</h2>
+        <div id="column-selection">
+          <label v-for="iso in allLanguages" :key="iso">
+            <input
+              type="checkbox"
+              :name="iso"
+              :checked="languages.includes(iso)"
+              @input="languageSelectionChanged(iso)"
+            />
+            <span class="iso">
+              {{ iso }}
+            </span>
+          </label>
+        </div>
         <table v-if="translationKeys && translationRows" id="edit-table">
           <thead>
             <th>Key</th>
@@ -37,6 +50,7 @@
               :isParent="isParent"
               :translationKey="key"
               :path="path"
+              :languages="languages"
               @open-edit="isParent ? null : openEdit(path)"
             >
               <td v-if="!isParent" v-for="iso in languages" :key="iso">
@@ -129,7 +143,8 @@ export default {
   data() {
     return {
       customTranslations: {},
-      languages: getLanguages(),
+      languages: ["de", "en"],
+      allLanguages: getLanguages(),
       translationKeys: null,
       defaultTranslations: null,
       defaultTranslationsFlat: {},
@@ -176,7 +191,6 @@ export default {
         const transformedValue = String(value || "").trim();
         if (
           transformedValue.length > 0 &&
-          key in this.defaultTranslationsFlat &&
           transformedValue != this.defaultTranslationsFlat[key]
         )
           editedCustomTranslations[key] = transformedValue;
@@ -188,13 +202,13 @@ export default {
       this.setDefaultTranslations(null);
       const baseUrl =
         "https://main.d1u2qdrqduf5v6.amplifyapp.com/translations/";
-      const urls = this.languages.map(
+      const urls = this.allLanguages.map(
         (iso) => `${baseUrl}${iso}/translations.json`
       );
       const requests = urls.map((url) => this.$axios.get(url));
       const requestResults = await Promise.all(requests);
       const result = {};
-      this.languages.forEach((iso, index) => {
+      this.allLanguages.forEach((iso, index) => {
         const rawData = requestResults[index].data;
         const data = typeof rawData === "string" ? JSON.parse(data) : rawData;
         result[iso] = data;
@@ -267,6 +281,13 @@ export default {
       this.customTranslations[`${iso}.${path}`] = event.target.value;
       this.customTranslations = { ...this.customTranslations }; // JSON.parse(JSON.stringify(this.customTranslations))
     },
+    languageSelectionChanged(iso) {
+      const isAlreadyInList = this.languages.includes(iso);
+      this.languages = this.allLanguages.filter((x) => {
+        if (x === iso) return !isAlreadyInList;
+        else return this.languages.includes(x);
+      });
+    },
   },
 
   computed: {
@@ -297,7 +318,7 @@ body {
 #wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
   padding-bottom: 10rem;
 }
 
@@ -427,5 +448,19 @@ input[type="file"]::file-selector-button:hover {
   background-color: #fff;
   color: black;
   transition: all 0.25s ease-in;
+}
+
+#column-selection label {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  font-weight: 500;
+  user-select: none;
+  margin-right: 0.5rem;
+}
+
+#column-selection {
+  display: flex;
+  flex-wrap: nowrap;
 }
 </style>

@@ -30,13 +30,12 @@
 import { getLanguages } from "../static/js/main";
 
 export default {
-  props: ["translationKey", "isParent", "path", "value"],
+  props: ["translationKey", "isParent", "path", "value", "languages"],
 
   emits: ["input", "open-edit"],
 
   data() {
     return {
-      languages: getLanguages(),
       pxPerDepth: 20,
     };
   },
@@ -57,7 +56,7 @@ export default {
   font-weight: bold;
 }
 
-.translation-row > td{
+.translation-row > td {
   max-width: 540px;
 }
 
