@@ -41,6 +41,23 @@
         <table v-if="translationKeys && translationRows" id="edit-table">
           <thead>
             <th>Key</th>
+            <th style="white-space: nowrap">
+              Original
+              <select
+                class="iso"
+                style="margin-left: 4px"
+                v-model="originalTranslationColumnIso"
+              >
+                <option
+                  v-for="iso in allLanguages"
+                  :key="iso"
+                  :value="iso"
+                  class="iso"
+                >
+                  {{ iso }}
+                </option>
+              </select>
+            </th>
             <th v-for="iso in languages" :key="iso" class="iso">{{ iso }}</th>
           </thead>
           <tbody>
@@ -53,6 +70,13 @@
               :languages="languages"
               @open-edit="isParent ? null : openEdit(path)"
             >
+              <td v-if="!isParent">
+                {{
+                  defaultTranslationsFlat[
+                    `${originalTranslationColumnIso}.${path}`
+                  ]
+                }}
+              </td>
               <td v-if="!isParent" v-for="iso in languages" :key="iso">
                 <current-word-translation
                   :originalTranslation="
@@ -149,6 +173,7 @@ export default {
       defaultTranslations: null,
       defaultTranslationsFlat: {},
       editWordPath: null,
+      originalTranslationColumnIso: "de",
     };
   },
 
@@ -425,10 +450,14 @@ textarea::-ms-input-placeholder {
   color: var(--placeholder-col);
 }
 
+select,
 input[type="file"] {
   background-color: var(--bg-accent);
   border: 1px solid var(--light-text);
   border-radius: 4px;
+}
+
+input[type="file"] {
   height: 40px;
   width: 500px;
   color: black;

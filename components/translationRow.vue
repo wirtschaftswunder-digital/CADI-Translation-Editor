@@ -21,6 +21,7 @@
         {{ translationKey }}
       </span>
     </td>
+    <td v-if="isParent"></td>
     <td v-if="isParent" v-for="iso in languages" :key="iso"></td>
     <slot></slot>
   </tr>
