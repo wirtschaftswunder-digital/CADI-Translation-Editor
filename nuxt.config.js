@@ -5,6 +5,12 @@ export default {
     target: "static",
     mode: "spa",
 
+    head: {
+        script: [
+            { src: 'https://code.jquery.com/jquery-3.6.0.min.js' }
+        ]
+    },
+
     router: {
         base: '/CADI-Translation-Editor/'
     },

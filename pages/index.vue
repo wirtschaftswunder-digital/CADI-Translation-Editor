@@ -151,7 +151,12 @@
           <button class="btn" @click="downloadResult">Download</button>
           <div style="display: flex; flex-wrap: nowrap">
             <span
-              style="margin-right: 6px; margin-top: auto; margin-bottom: auto; font-weight: 500;"
+              style="
+                margin-right: 6px;
+                margin-top: auto;
+                margin-bottom: auto;
+                font-weight: 500;
+              "
               >Download source file:</span
             >
             <button
@@ -241,18 +246,43 @@ export default {
       downloadObjectAsJson(obj, "translations");
     },
     async loadDefaultTranslations() {
+      function loadJSON(url) {
+        return new Promise((resolve, reject) => {
+          $.ajax({
+            url: url,
+            dataType: "json",
+            success: (response) => {
+              try {
+                if (typeof response === "string") {
+                  resolve(JSON.parse(response));
+                } else if (typeof response === "object") {
+                  resolve(response);
+                } else {
+                  resolve({});
+                }
+              } catch (error) {
+                console.error(error);
+                resolve({});
+              }
+            },
+            error: (error) => {
+              reject(error);
+            },
+          });
+        });
+      }
+
       this.setDefaultTranslations(null);
       const baseUrl =
         "https://main.d1u2qdrqduf5v6.amplifyapp.com/translations/";
       const urls = this.allLanguages.map(
         (iso) => `${baseUrl}${iso}/translations.json`
       );
-      const requests = urls.map((url) => this.$axios.get(url));
+      const requests = urls.map(loadJSON);
       const requestResults = await Promise.all(requests);
       const result = {};
       this.allLanguages.forEach((iso, index) => {
-        const rawData = requestResults[index].data;
-        const data = typeof rawData === "string" ? JSON.parse(data) : rawData;
+        const data = requestResults[index];
         result[iso] = data;
       });
       this.setDefaultTranslations(result);
