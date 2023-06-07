@@ -276,7 +276,10 @@ export default {
           editedCustomTranslations[key] = transformedValue;
       });
       const obj = nestTranslations(editedCustomTranslations);
-      downloadObjectAsJson(obj, "translations");
+      const fileName = this.customTranslationsFileName
+        ? this.customTranslationsFileName.replace(".json", "")
+        : "translations";
+      downloadObjectAsJson(obj, fileName);
     },
     async loadDefaultTranslations() {
       this.setDefaultTranslations(null);
