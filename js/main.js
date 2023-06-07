@@ -1,3 +1,7 @@
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+
+
 export function getLanguages() {
     return ["de", "en", "fr", "it", "es"]
 }
@@ -52,4 +56,46 @@ export function nestTranslations(data) {
         cur[prop] = data[p];
     }
     return result[""];
+}
+
+
+export function getUrlParameter(parameterName) {
+    return urlParams.get(parameterName)
+}
+
+
+export function getRequiredUrlParameter(parameterName) {
+    let result = getUrlParameter(parameterName)
+    if (typeof result === 'string' && result.length > 0) return result;
+    if (typeof result === "number" && !isNaN(result)) return result;
+
+    // error case
+    throw `Missing URL parameter: ${parameterName}`;
+}
+
+
+export function loadJSON(url) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url,
+            dataType: "json",
+            success: (response) => {
+                try {
+                    if (typeof response === "string") {
+                        resolve(JSON.parse(response));
+                    } else if (typeof response === "object") {
+                        resolve(response);
+                    } else {
+                        resolve({});
+                    }
+                } catch (error) {
+                    console.error(error);
+                    resolve({});
+                }
+            },
+            error: (error) => {
+                reject(error);
+            },
+        });
+    });
 }
