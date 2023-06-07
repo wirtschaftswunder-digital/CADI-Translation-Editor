@@ -11,8 +11,8 @@
       <h1>CADI Translation Editor</h1>
 
       <!-- Import json -->
-      <div>
-        <h2>Step 1: Load project (optional)</h2>
+      <div v-if="showFileImport">
+        <h2>Load project (optional)</h2>
         <label for="fileInput">
           <p>
             Load your current custom translations .json file to continue
@@ -24,7 +24,7 @@
 
       <!-- Edit -->
       <div>
-        <h2>Step 2: Edit translations</h2>
+        <h2>Edit translations</h2>
         <div id="column-selection">
           <label v-for="iso in allLanguages" :key="iso">
             <input
@@ -140,16 +140,18 @@
 
       <!-- Export json -->
       <div style="max-width: 540px">
-        <h2>Step 3: Download results</h2>
+        <h2>Download results</h2>
         <p>
           Download the output file, which contains your custom translations.
-          Upload it on your website and make sure to provide your booking mask
-          frontend code with the relative path to the uploaded custom
-          translations file.
+          Send it to us via email. We will check it and set it up for your
+          booking mask.
         </p>
         <div style="display: flex; justify-content: space-between">
           <button class="btn" @click="downloadResult">Download</button>
-          <div style="display: flex; flex-wrap: nowrap">
+          <div
+            v-if="showDownloadSrcFileSection"
+            style="display: flex; flex-wrap: nowrap"
+          >
             <span
               style="
                 margin-right: 6px;
@@ -182,12 +184,16 @@ import {
   setDefaultTranslations,
   flattenTranslations,
   nestTranslations,
+  getUrlParameter,
+  getRequiredUrlParameter,
+  loadJSON,
 } from "../static/js/main";
 import translationRow from "../components/translationRow.vue";
 
 export default {
   data() {
     return {
+      baseUrl: "https://dev.d1u2qdrqduf5v6.amplifyapp.com/translations/", // TODO: set to main?
       customTranslations: {},
       languages: ["de", "en"],
       allLanguages: getLanguages(),
@@ -196,41 +202,68 @@ export default {
       defaultTranslationsFlat: {},
       editWordPath: null,
       originalTranslationColumnIso: "de",
+      customTranslationsFileName: null,
+      showFileImport: false,
+      showDownloadSrcFileSection: !getUrlParameter("anbieterId"),
     };
   },
 
   created() {
     this.loadDefaultTranslations();
-  },
 
-  mounted() {
-    // listener for file import
-    const thisRef = this;
-    document
-      .getElementById("fileInput")
-      .addEventListener("change", function selectedFileChanged() {
-        if (this.files.length === 0) {
-          console.log("No file selected.");
-          return;
-        }
-        const reader = new FileReader();
-        reader.onload = function fileReadCompleted() {
-          // when the reader is done, the content is in reader.result.
-          //console.log(reader.result);
-          const str = reader.result; //reader.readAsText(this.files[0]);
-          const obj = JSON.parse(str);
-          if (obj && typeof obj === "object") {
-            thisRef.loadedCustomTranslations = flattenTranslations(obj);
-            thisRef.customTranslations = flattenTranslations(obj);
-            console.log(thisRef.customTranslations);
-            thisRef.setTranslationKeys();
-          }
-        };
-        reader.readAsText(this.files[0]);
-      });
+    // check for custom translations file
+    const anbieterId = getUrlParameter("anbieterId");
+    const subdomain = getUrlParameter("subdomain");
+    if (subdomain && anbieterId) {
+      this.showFileImport = false;
+      this.customTranslationsFileName = `${subdomain}_${anbieterId}.json`;
+      this.loadCustomTranslationsFromServer();
+    } else {
+      this.showFileImport = true;
+      this.$nextTick().then(this.setUpListenerForFileImport);
+    }
   },
 
   methods: {
+    async loadCustomTranslationsFromServer() {
+      let obj = {};
+      try {
+        const url = `${this.baseUrl}custom/${this.customTranslationsFileName}`;
+        const response = await loadJSON(url);
+        if (Object.keys(response).length > 0) obj = response;
+      } catch (error) {
+        obj = {};
+        console.error(error);
+      }
+      this.customTranslations = flattenTranslations(obj);
+      console.log(this.customTranslations);
+      this.setTranslationKeys();
+    },
+    setUpListenerForFileImport() {
+      const thisRef = this;
+      document
+        .getElementById("fileInput")
+        .addEventListener("change", function selectedFileChanged() {
+          if (this.files.length === 0) {
+            console.log("No file selected.");
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = function fileReadCompleted() {
+            // when the reader is done, the content is in reader.result.
+            //console.log(reader.result);
+            const str = reader.result; //reader.readAsText(this.files[0]);
+            const obj = JSON.parse(str);
+            if (obj && typeof obj === "object") {
+              thisRef.loadedCustomTranslations = flattenTranslations(obj);
+              thisRef.customTranslations = flattenTranslations(obj);
+              console.log(thisRef.customTranslations);
+              thisRef.setTranslationKeys();
+            }
+          };
+          reader.readAsText(this.files[0]);
+        });
+    },
     downloadResult() {
       // filter (original != custom translation)
       const editedCustomTranslations = {};
@@ -246,37 +279,9 @@ export default {
       downloadObjectAsJson(obj, "translations");
     },
     async loadDefaultTranslations() {
-      function loadJSON(url) {
-        return new Promise((resolve, reject) => {
-          $.ajax({
-            url: url,
-            dataType: "json",
-            success: (response) => {
-              try {
-                if (typeof response === "string") {
-                  resolve(JSON.parse(response));
-                } else if (typeof response === "object") {
-                  resolve(response);
-                } else {
-                  resolve({});
-                }
-              } catch (error) {
-                console.error(error);
-                resolve({});
-              }
-            },
-            error: (error) => {
-              reject(error);
-            },
-          });
-        });
-      }
-
       this.setDefaultTranslations(null);
-      const baseUrl =
-        "https://main.d1u2qdrqduf5v6.amplifyapp.com/translations/";
       const urls = this.allLanguages.map(
-        (iso) => `${baseUrl}${iso}/translations.json`
+        (iso) => `${this.baseUrl}${iso}/translations.json`
       );
       const requests = urls.map(loadJSON);
       const requestResults = await Promise.all(requests);
