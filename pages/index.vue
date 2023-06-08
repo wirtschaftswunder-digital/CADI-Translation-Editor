@@ -379,7 +379,7 @@ export default {
             : this.defaultTranslationsFlat[key];
       });
       const obj = nestTranslations(translations);
-      downloadObjectAsJson(obj, iso);
+      downloadObjectAsJson(obj[iso], iso);
     },
   },
 
