@@ -216,7 +216,7 @@ export default {
     const subdomain = getUrlParameter("subdomain");
     if (subdomain && anbieterId) {
       this.showFileImport = false;
-      this.customTranslationsFileName = `${subdomain}_${anbieterId}.json`;
+      this.customTranslationsFileName = `${subdomain}_${anbieterId}.json`.toLowerCase();
       this.loadCustomTranslationsFromServer();
     } else {
       this.showFileImport = true;
