@@ -48,6 +48,7 @@ export function nestTranslations(data) {
             temp = p.substring(last, idx !== -1 ? idx : undefined);
             if (!cur[prop]) {
                 cur[prop] = (!isNaN(parseInt(temp)) ? [] : {});
+                cur[prop] = {};
             }
             cur = cur[prop]
             prop = temp;
