@@ -178,7 +178,7 @@
 </template>
 
 <script>
-import { downloadObjectAsJson } from "../static/js/downloadJson";
+import { downloadObjectAsJson } from '../static/js/downloadJson'
 import {
   getLanguages,
   setDefaultTranslations,
@@ -186,207 +186,215 @@ import {
   nestTranslations,
   getUrlParameter,
   getRequiredUrlParameter,
-  loadJSON,
-} from "../static/js/main";
-import translationRow from "../components/translationRow.vue";
+  loadJSON
+} from '../static/js/main'
+import translationRow from '../components/translationRow.vue'
+import projectTranslationsUrls from '../static/json/projectTranslationsUrls.json'
 
 export default {
-  data() {
+  data () {
     return {
-      baseUrl: "https://dev.d1u2qdrqduf5v6.amplifyapp.com/translations/", // TODO: set to main?
       customTranslations: {},
-      languages: ["de", "en"],
+      languages: ['de', 'en'],
       allLanguages: getLanguages(),
       translationKeys: null,
       defaultTranslations: null,
       defaultTranslationsFlat: {},
       editWordPath: null,
-      originalTranslationColumnIso: "de",
+      originalTranslationColumnIso: 'de',
       customTranslationsFileName: null,
       showFileImport: false,
-      showDownloadSrcFileSection: !getUrlParameter("anbieterId"),
-    };
+      showDownloadSrcFileSection: !getUrlParameter('anbieterId'),
+      project: getUrlParameter('project') || 'bm'
+    }
   },
 
-  created() {
-    this.loadDefaultTranslations();
+  created () {
+    this.loadDefaultTranslations()
 
     // check for custom translations file
-    const anbieterId = getUrlParameter("anbieterId");
-    const subdomain = getUrlParameter("subdomain");
+    const anbieterId = getUrlParameter('anbieterId')
+    const subdomain = getUrlParameter('subdomain')
     if (subdomain && anbieterId) {
-      this.showFileImport = false;
-      this.customTranslationsFileName = `${subdomain}_${anbieterId}.json`.toLowerCase();
-      this.loadCustomTranslationsFromServer();
+      this.showFileImport = false
+      this.customTranslationsFileName =
+        `${subdomain}_${anbieterId}.json`.toLowerCase()
+      this.loadCustomTranslationsFromServer()
     } else {
-      this.showFileImport = true;
-      this.$nextTick().then(this.setUpListenerForFileImport);
+      this.showFileImport = true
+      this.$nextTick().then(this.setUpListenerForFileImport)
     }
   },
 
   methods: {
-    async loadCustomTranslationsFromServer() {
-      let obj = {};
+    async loadCustomTranslationsFromServer () {
+      let obj = {}
       try {
-        const url = `${this.baseUrl}custom/${this.customTranslationsFileName}`;
-        const response = await loadJSON(url);
-        if (Object.keys(response).length > 0) obj = response;
+        const url = `${this.baseUrl}custom/${this.customTranslationsFileName}`
+        const response = await loadJSON(url)
+        if (Object.keys(response).length > 0) obj = response
       } catch (error) {
-        obj = {};
-        console.error(error);
+        obj = {}
+        console.error(error)
       }
-      this.customTranslations = flattenTranslations(obj);
-      console.log(this.customTranslations);
-      this.setTranslationKeys();
+      this.customTranslations = flattenTranslations(obj)
+      console.log(this.customTranslations)
+      this.setTranslationKeys()
     },
-    setUpListenerForFileImport() {
-      const thisRef = this;
+    setUpListenerForFileImport () {
+      const thisRef = this
       document
-        .getElementById("fileInput")
-        .addEventListener("change", function selectedFileChanged() {
+        .getElementById('fileInput')
+        .addEventListener('change', function selectedFileChanged () {
           if (this.files.length === 0) {
-            console.log("No file selected.");
-            return;
+            console.log('No file selected.')
+            return
           }
-          const reader = new FileReader();
-          reader.onload = function fileReadCompleted() {
+          const reader = new FileReader()
+          reader.onload = function fileReadCompleted () {
             // when the reader is done, the content is in reader.result.
             //console.log(reader.result);
-            const str = reader.result; //reader.readAsText(this.files[0]);
-            const obj = JSON.parse(str);
-            if (obj && typeof obj === "object") {
-              thisRef.loadedCustomTranslations = flattenTranslations(obj);
-              thisRef.customTranslations = flattenTranslations(obj);
-              console.log(thisRef.customTranslations);
-              thisRef.setTranslationKeys();
+            const str = reader.result //reader.readAsText(this.files[0]);
+            const obj = JSON.parse(str)
+            if (obj && typeof obj === 'object') {
+              thisRef.loadedCustomTranslations = flattenTranslations(obj)
+              thisRef.customTranslations = flattenTranslations(obj)
+              console.log(thisRef.customTranslations)
+              thisRef.setTranslationKeys()
             }
-          };
-          reader.readAsText(this.files[0]);
-        });
+          }
+          reader.readAsText(this.files[0])
+        })
     },
-    downloadResult() {
+    downloadResult () {
       // filter (original != custom translation)
-      const editedCustomTranslations = {};
+      const editedCustomTranslations = {}
       Object.entries(this.customTranslations).forEach(([key, value]) => {
-        const transformedValue = String(value || "").trim();
+        const transformedValue = String(value || '').trim()
         if (
           transformedValue.length > 0 &&
           transformedValue != this.defaultTranslationsFlat[key]
         )
-          editedCustomTranslations[key] = transformedValue;
-      });
-      const obj = nestTranslations(editedCustomTranslations);
+          editedCustomTranslations[key] = transformedValue
+      })
+      const obj = nestTranslations(editedCustomTranslations)
       const fileName = this.customTranslationsFileName
-        ? this.customTranslationsFileName.replace(".json", "")
-        : "translations";
-      downloadObjectAsJson(obj, fileName);
+        ? this.customTranslationsFileName.replace('.json', '')
+        : 'translations'
+      downloadObjectAsJson(obj, fileName)
     },
-    async loadDefaultTranslations() {
-      this.setDefaultTranslations(null);
+    async loadDefaultTranslations () {
+      this.setDefaultTranslations(null)
       const urls = this.allLanguages.map(
-        (iso) => `${this.baseUrl}${iso}/translations.json`
-      );
-      const requests = urls.map(loadJSON);
-      const requestResults = await Promise.all(requests);
-      const result = {};
+        iso => `${this.baseUrl}${iso}/translations.json`
+      )
+      const requests = urls.map(loadJSON)
+      const requestResults = await Promise.all(requests)
+      const result = {}
       this.allLanguages.forEach((iso, index) => {
-        const data = requestResults[index];
-        result[iso] = data;
-      });
-      this.setDefaultTranslations(result);
-      this.setTranslationKeys();
+        const data = requestResults[index]
+        result[iso] = data
+      })
+      this.setDefaultTranslations(result)
+      this.setTranslationKeys()
     },
-    openEdit(path) {
-      this.editWordPath = path;
+    openEdit (path) {
+      this.editWordPath = path
     },
-    closeEdit() {
-      this.editWordPath = null;
+    closeEdit () {
+      this.editWordPath = null
       // TODO: save progress in cookie / local storage
     },
-    setDefaultTranslations(value) {
-      setDefaultTranslations(value);
-      this.defaultTranslationsFlat = flattenTranslations(value || {});
-      this.defaultTranslations = value;
+    setDefaultTranslations (value) {
+      setDefaultTranslations(value)
+      this.defaultTranslationsFlat = flattenTranslations(value || {})
+      this.defaultTranslations = value
     },
-    setTranslationKeys() {
+    setTranslationKeys () {
       const getValueForEntry = (entry, currentPath) => {
-        const [entryKey, entryValue] = entry;
+        const [entryKey, entryValue] = entry
         const path =
-          currentPath === "" ? entryKey : `${currentPath}.${entryKey}`;
+          currentPath === '' ? entryKey : `${currentPath}.${entryKey}`
         const result = {
           key: entryKey,
           children: null,
-          path,
-        };
-        if (entryValue && typeof entryValue === "object")
-          result.children = getChildren(entryValue, path);
-        else result.original = entryValue;
-        return result;
-      };
+          path
+        }
+        if (entryValue && typeof entryValue === 'object')
+          result.children = getChildren(entryValue, path)
+        else result.original = entryValue
+        return result
+      }
 
       const getChildren = (obj, path) =>
-        Object.entries(obj).map((entry) => getValueForEntry(entry, path));
+        Object.entries(obj).map(entry => getValueForEntry(entry, path))
 
-      let rows = null;
+      let rows = null
       if (this.defaultTranslations) {
-        rows = [];
-        this.translationKeys = getChildren(this.defaultTranslations.de, "");
+        rows = []
+        this.translationKeys = getChildren(this.defaultTranslations.de, '')
         // flatten translationKeys ==> rows
-        const addRowsForEntry = (entry) => {
-          const row = { key: entry.key, path: entry.path, isParent: false };
+        const addRowsForEntry = entry => {
+          const row = { key: entry.key, path: entry.path, isParent: false }
           if (entry.children) {
             // is parent node
-            row.isParent = true;
-            rows.push(row);
-            entry.children.forEach(addRowsForEntry);
+            row.isParent = true
+            rows.push(row)
+            entry.children.forEach(addRowsForEntry)
           } else {
             // is leaf node
-            row.original = entry.original;
-            rows.push(row);
+            row.original = entry.original
+            rows.push(row)
           }
-        };
-        this.translationKeys.forEach(addRowsForEntry);
-        this.languages.forEach((iso) => {
+        }
+        this.translationKeys.forEach(addRowsForEntry)
+        this.languages.forEach(iso => {
           rows.forEach(({ isParent, path }) => {
             if (!isParent) {
-              const k = `${iso}.${path}`;
-              this.customTranslations[k] = this.customTranslations[k] || "";
+              const k = `${iso}.${path}`
+              this.customTranslations[k] = this.customTranslations[k] || ''
             }
-          });
-        });
-      } else this.translationKeys = null;
-      this.translationRows = rows;
+          })
+        })
+      } else this.translationKeys = null
+      this.translationRows = rows
     },
-    updateTranslation(iso, path, event) {
-      this.customTranslations[`${iso}.${path}`] = event.target.value;
-      this.customTranslations = { ...this.customTranslations }; // JSON.parse(JSON.stringify(this.customTranslations))
+    updateTranslation (iso, path, event) {
+      this.customTranslations[`${iso}.${path}`] = event.target.value
+      this.customTranslations = { ...this.customTranslations } // JSON.parse(JSON.stringify(this.customTranslations))
     },
-    languageSelectionChanged(iso) {
-      const isAlreadyInList = this.languages.includes(iso);
-      this.languages = this.allLanguages.filter((x) => {
-        if (x === iso) return !isAlreadyInList;
-        else return this.languages.includes(x);
-      });
+    languageSelectionChanged (iso) {
+      const isAlreadyInList = this.languages.includes(iso)
+      this.languages = this.allLanguages.filter(x => {
+        if (x === iso) return !isAlreadyInList
+        else return this.languages.includes(x)
+      })
     },
-    downloadResultAsSourceFile(iso) {
-      const translations = {};
+    downloadResultAsSourceFile (iso) {
+      const translations = {}
       Object.entries(this.customTranslations).forEach(([key, value]) => {
-        if (!key.startsWith(iso)) return null;
-        const transformedValue = String(value || "").trim();
+        if (!key.startsWith(iso)) return null
+        const transformedValue = String(value || '').trim()
         translations[key] =
           transformedValue.length > 0
             ? transformedValue
-            : this.defaultTranslationsFlat[key];
-      });
-      const obj = nestTranslations(translations);
-      downloadObjectAsJson(obj[iso], iso);
-    },
+            : this.defaultTranslationsFlat[key]
+      })
+      const obj = nestTranslations(translations)
+      downloadObjectAsJson(obj[iso], iso)
+    }
   },
 
   computed: {
-    isLoading() {
-      return this.defaultTranslations === null;
+    isLoading () {
+      return this.defaultTranslations === null
     },
-  },
-};
+    baseUrl () {
+      const url = projectTranslationsUrls[this.project.toLowerCase()]
+      if (!url)
+        throw `Project ${this.project} not found in projectTranslationsUrls.json`
+      return url
+    }
+  }
+}
 </script>
