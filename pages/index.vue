@@ -1,5 +1,6 @@
 <template>
   <div id="wrapper">
+    <!-- loading screen -->
     <div v-if="isLoading">
       <h1>CADI Translation Editor</h1>
 
@@ -236,6 +237,19 @@ export default {
     }
   },
 
+  mounted () {
+    // add listener for leave page warning
+    const thisRef = this
+    window.addEventListener('beforeunload', function (e) {
+      if (thisRef.getHasUnsavedChanges()) {
+        const confirmationMessage =
+          'It looks like you have been editing something. If you leave before downloading, your changes will be lost.'
+        e.returnValue = confirmationMessage //Gecko + IE
+        return confirmationMessage //Gecko + Webkit, Safari, Chrome etc.
+      }
+    })
+  },
+
   methods: {
     async loadCustomTranslationsFromServer () {
       let obj = {}
@@ -248,8 +262,33 @@ export default {
         console.error(error)
       }
       this.customTranslations = flattenTranslations(obj)
-      console.log(this.customTranslations)
+      this.loadedCustomTranslationsFlat = JSON.parse(
+        JSON.stringify(this.customTranslations)
+      )
       this.setTranslationKeys()
+    },
+    getHasUnsavedChanges () {
+      const currentCustomTranslations = this.getEditedCustomTranslations()
+      const loadedCustomTranslationsFlat = this.getEditedCustomTranslations(
+        this.loadedCustomTranslationsFlat
+      )
+
+      // compare currentCustomTranslations with loadedCustomTranslationsFlat
+      // ignore the order of the keys
+      const keys = []
+      ;[currentCustomTranslations, loadedCustomTranslationsFlat].forEach(
+        obj => {
+          Object.keys(obj).forEach(key => {
+            if (!keys.includes(key)) keys.push(key)
+          })
+        }
+      )
+      for (const key of keys) {
+        const current = currentCustomTranslations[key]
+        const loaded = loadedCustomTranslationsFlat[key]
+        if (current !== loaded) return true
+      }
+      return false
     },
     setUpListenerForFileImport () {
       const thisRef = this
@@ -267,19 +306,22 @@ export default {
             const str = reader.result //reader.readAsText(this.files[0]);
             const obj = JSON.parse(str)
             if (obj && typeof obj === 'object') {
-              thisRef.loadedCustomTranslations = flattenTranslations(obj)
               thisRef.customTranslations = flattenTranslations(obj)
-              console.log(thisRef.customTranslations)
+              thisRef.loadedCustomTranslationsFlat = JSON.parse(
+                JSON.stringify(thisRef.customTranslations)
+              )
               thisRef.setTranslationKeys()
             }
           }
           reader.readAsText(this.files[0])
         })
     },
-    downloadResult () {
+    getEditedCustomTranslations (customTranslations) {
+      if (!customTranslations) customTranslations = this.customTranslations
+
       // filter (original != custom translation)
       const editedCustomTranslations = {}
-      Object.entries(this.customTranslations).forEach(([key, value]) => {
+      Object.entries(customTranslations).forEach(([key, value]) => {
         const transformedValue = String(value || '').trim()
         if (
           transformedValue.length > 0 &&
@@ -287,6 +329,10 @@ export default {
         )
           editedCustomTranslations[key] = transformedValue
       })
+      return editedCustomTranslations
+    },
+    downloadResult () {
+      const editedCustomTranslations = this.getEditedCustomTranslations()
       const obj = nestTranslations(editedCustomTranslations)
       const fileName = this.customTranslationsFileName
         ? this.customTranslationsFileName.replace('.json', '')
