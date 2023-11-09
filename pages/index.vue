@@ -144,7 +144,7 @@
         <p>
           Download the output file, which contains your custom translations.
           Send it to us via email. We will check it and set it up for your
-          booking mask.
+          project.
         </p>
         <div style="display: flex; justify-content: space-between">
           <button class="btn" @click="downloadResult">Download</button>
@@ -185,11 +185,11 @@ import {
   flattenTranslations,
   nestTranslations,
   getUrlParameter,
-  getRequiredUrlParameter,
-  loadJSON
+  getBaseTranslationsUrl,
+  loadJSON,
+  getProjectCode
 } from '../static/js/main'
 import translationRow from '../components/translationRow.vue'
-import projectTranslationsUrls from '../static/json/projectTranslationsUrls.json'
 
 export default {
   data () {
@@ -197,6 +197,7 @@ export default {
       customTranslations: {},
       languages: ['de', 'en'],
       allLanguages: getLanguages(),
+      baseUrl: getBaseTranslationsUrl(),
       translationKeys: null,
       defaultTranslations: null,
       defaultTranslationsFlat: {},
@@ -205,7 +206,7 @@ export default {
       customTranslationsFileName: null,
       showFileImport: false,
       showDownloadSrcFileSection: !getUrlParameter('anbieterId'),
-      project: getUrlParameter('project') || 'bm'
+      project: getProjectCode()
     }
   },
 
@@ -388,12 +389,6 @@ export default {
   computed: {
     isLoading () {
       return this.defaultTranslations === null
-    },
-    baseUrl () {
-      const url = projectTranslationsUrls[this.project.toLowerCase()]
-      if (!url)
-        throw `Project ${this.project} not found in projectTranslationsUrls.json`
-      return url
     }
   }
 }

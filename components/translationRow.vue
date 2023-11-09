@@ -28,8 +28,6 @@
 </template>
 
 <script>
-import { getLanguages } from "../static/js/main";
-
 export default {
   props: ["translationKey", "isParent", "path", "value", "languages"],
 

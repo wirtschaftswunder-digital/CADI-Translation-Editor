@@ -1,0 +1,19 @@
+{
+  "bm": {
+    "supportedLanguages": [
+      "de",
+      "en",
+      "fr",
+      "it",
+      "es"
+    ],
+    "translationsUrl": "https://main.d1u2qdrqduf5v6.amplifyapp.com/translations/"
+  },
+  "pf": {
+    "supportedLanguages": [
+      "de",
+      "en"
+    ],
+    "translationsUrl": "https://pf.camps.digital/translations/"
+  }
+}
