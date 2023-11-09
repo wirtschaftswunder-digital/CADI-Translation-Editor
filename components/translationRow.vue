@@ -3,51 +3,48 @@
     class="translation-row"
     :class="{
       'parent-key': isParent,
-      'depth-0': depth === 0,
+      'depth-0': depth === 0
     }"
     :style="{ '--depth-in-px': `${(depth - 1) * pxPerDepth}px` }"
     @click="$emit('open-edit')"
   >
-    <td :class="{ 'parent-key': isParent }" class="translation-key">
-      <!-- <div v-if="depth > 1" style="display: absolute">
-        <div
-          v-for="v in depth - 1"
-          :key="v"
-          class="depth-line"
-          :style="{ '--depth-in-px-2': `${(v - 1) * pxPerDepth}px` }"
-        ></div>
-      </div> -->
+    <td
+      :class="{ 'parent-key': isParent }"
+      class="translation-key"
+      :colspan="colspan"
+    >
       <span :style="{ 'padding-left': paddingLeft }">
         {{ translationKey }}
       </span>
     </td>
-    <td v-if="isParent"></td>
-    <td v-if="isParent" v-for="iso in languages" :key="iso"></td>
     <slot></slot>
   </tr>
 </template>
 
 <script>
 export default {
-  props: ["translationKey", "isParent", "path", "value", "languages"],
+  props: ['translationKey', 'isParent', 'path', 'value'],
 
-  emits: ["input", "open-edit"],
+  emits: ['input', 'open-edit'],
 
-  data() {
+  data () {
     return {
-      pxPerDepth: 20,
-    };
+      pxPerDepth: 20
+    }
   },
 
   computed: {
-    paddingLeft() {
-      return `${this.depth * this.pxPerDepth}px`;
+    paddingLeft () {
+      return `${this.depth * this.pxPerDepth}px`
     },
-    depth() {
-      return this.path.split(".").length - 1;
+    depth () {
+      return this.path.split('.').length - 1
     },
-  },
-};
+    colspan () {
+      return this.isParent ? '100%' : 1
+    }
+  }
+}
 </script>
 
 <style lang="css">
@@ -73,7 +70,7 @@ export default {
 }
 
 .translation-row:not(.depth-0) td:first-child::before {
-  content: "";
+  content: '';
   position: absolute;
   display: block;
   top: 0;
@@ -95,7 +92,7 @@ export default {
 }
 
 .depth-line {
-  content: "";
+  content: '';
   height: 100%;
   border-left: 1px solid var(--line-color);
   top: 0;

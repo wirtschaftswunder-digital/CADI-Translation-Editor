@@ -67,7 +67,6 @@
               :isParent="isParent"
               :translationKey="key"
               :path="path"
-              :languages="languages"
               @open-edit="isParent ? null : openEdit(path)"
             >
               <td v-if="!isParent">
