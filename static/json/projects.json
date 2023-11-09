@@ -1,5 +1,6 @@
 {
   "bm": {
+    "projectName": "Booking Mask",
     "supportedLanguages": [
       "de",
       "en",
@@ -10,6 +11,7 @@
     "translationsUrl": "https://main.d1u2qdrqduf5v6.amplifyapp.com/translations/"
   },
   "pf": {
+    "projectName": "Product Finder / Termin Tabelle",
     "supportedLanguages": [
       "de",
       "en"

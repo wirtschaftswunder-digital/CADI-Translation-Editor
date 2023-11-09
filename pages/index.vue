@@ -10,6 +10,15 @@
     <div v-show="!isLoading" style="display: grid; gap: 5rem">
       <h1>CADI Translation Editor</h1>
 
+      <!-- project selection -->
+      <div>
+        <p>
+          You are editing translations for the <strong>{{ projectName }}</strong
+          >. Switch project:
+        </p>
+        <switch-project-button />
+      </div>
+
       <!-- Import json -->
       <div v-if="showFileImport">
         <h2>Load project (optional)</h2>
@@ -143,7 +152,8 @@
         <p>
           Download the output file, which contains your custom translations.
           Send it to us via email. We will check it and set it up for your
-          project.
+          <strong>{{ projectName }}</strong
+          >.
         </p>
         <div style="display: flex; justify-content: space-between">
           <button class="btn" @click="downloadResult">Download</button>
@@ -186,7 +196,7 @@ import {
   getUrlParameter,
   getBaseTranslationsUrl,
   loadJSON,
-  getProjectCode
+  getProjectName
 } from '../static/js/main'
 import translationRow from '../components/translationRow.vue'
 
@@ -205,7 +215,7 @@ export default {
       customTranslationsFileName: null,
       showFileImport: false,
       showDownloadSrcFileSection: !getUrlParameter('anbieterId'),
-      project: getProjectCode()
+      projectName: getProjectName()
     }
   },
 
