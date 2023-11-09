@@ -86,10 +86,14 @@ h6 {
     color: var(--medium-text);
 }
 
-#edit-table thead th {
-    text-align: left;
+#edit-table thead {
     top: 0;
     position: sticky;
+    z-index: 2;
+}
+
+#edit-table thead th {
+    text-align: left;
     background: white;
 }
 
