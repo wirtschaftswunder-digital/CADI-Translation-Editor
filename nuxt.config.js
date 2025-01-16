@@ -10,7 +10,7 @@ export default {
   },
 
   router: {
-    base: '/CADI-Translation-Editor/'
+    base: process.env.ROUTER_BASE || '/CADI-Translation-Editor/'
   },
 
   css: ['~/assets/css/main.css'],
@@ -23,7 +23,8 @@ export default {
   build: {
     publicPath:
       process.env.NODE_ENV === 'production'
-        ? 'https://leon-1207.github.io/CADI-Translation-Editor'
+        ? process.env.HOSTING_URL ||
+          'https://leon-1207.github.io/CADI-Translation-Editor'
         : undefined
   },
 
