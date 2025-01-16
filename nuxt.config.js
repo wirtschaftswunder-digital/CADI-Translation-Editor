@@ -20,6 +20,13 @@ export default {
     fallback: '404.html'
   },
 
+  build: {
+    publicPath:
+      process.env.NODE_ENV === 'production'
+        ? 'https://leon-1207.github.io/CADI-Translation-Editor'
+        : undefined
+  },
+
   components: {
     dirs: ['~/components']
   },
