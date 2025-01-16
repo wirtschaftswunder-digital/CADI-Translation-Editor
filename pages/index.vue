@@ -2,8 +2,6 @@
   <div id="wrapper">
     <!-- loading screen -->
     <div v-if="isLoading">
-      <h1>CADI Translation Editor</h1>
-
       <p>Loading...</p>
     </div>
 
@@ -14,22 +12,9 @@
       <!-- project selection -->
       <div>
         <p>
-          You are editing translations for the <strong>{{ projectName }}</strong
-          >. Switch project:
+          You are editing translations for the <strong>{{ projectName }}</strong>. Switch project:
         </p>
         <switch-project-button />
-      </div>
-
-      <!-- Import json -->
-      <div v-if="showFileImport">
-        <h2>Load project (optional)</h2>
-        <label for="fileInput">
-          <p>
-            Load your current custom translations .json file to continue
-            editing.
-          </p>
-        </label>
-        <input type="file" name="fileInput" id="fileInput" accept=".json" />
       </div>
 
       <!-- Edit -->
@@ -37,12 +22,8 @@
         <h2>Edit translations</h2>
         <div id="column-selection">
           <label v-for="iso in allLanguages" :key="iso">
-            <input
-              type="checkbox"
-              :name="iso"
-              :checked="languages.includes(iso)"
-              @input="languageSelectionChanged(iso)"
-            />
+            <input type="checkbox" :name="iso" :checked="languages.includes(iso)"
+              @input="languageSelectionChanged(iso)" />
             <span class="iso">
               {{ iso }}
             </span>
@@ -53,17 +34,8 @@
             <th>Key</th>
             <th style="white-space: nowrap">
               Original
-              <select
-                class="iso"
-                style="margin-left: 4px"
-                v-model="originalTranslationColumnIso"
-              >
-                <option
-                  v-for="iso in allLanguages"
-                  :key="iso"
-                  :value="iso"
-                  class="iso"
-                >
+              <select class="iso" style="margin-left: 4px" v-model="originalTranslationColumnIso">
+                <option v-for="iso in allLanguages" :key="iso" :value="iso" class="iso">
                   {{ iso }}
                 </option>
               </select>
@@ -71,28 +43,18 @@
             <th v-for="iso in languages" :key="iso" class="iso">{{ iso }}</th>
           </thead>
           <tbody>
-            <translationRow
-              v-for="{ key, isParent, path } in translationRows"
-              :key="path"
-              :isParent="isParent"
-              :translationKey="key"
-              :path="path"
-              @open-edit="isParent ? null : openEdit(path)"
-            >
+            <translationRow v-for="{ key, isParent, path } in translationRows" :key="path" :isParent="isParent"
+              :translationKey="key" :path="path" @open-edit="isParent ? null : openEdit(path)">
               <td v-if="!isParent">
                 {{
                   defaultTranslationsFlat[
-                    `${originalTranslationColumnIso}.${path}`
+                  `${originalTranslationColumnIso}.${path}`
                   ]
                 }}
               </td>
               <td v-if="!isParent" v-for="iso in languages" :key="iso">
-                <current-word-translation
-                  :originalTranslation="
-                    defaultTranslationsFlat[`${iso}.${path}`]
-                  "
-                  :customTranslation="customTranslations[`${iso}.${path}`]"
-                />
+                <current-word-translation :originalTranslation="defaultTranslationsFlat[`${iso}.${path}`]
+                  " :customTranslation="customTranslations[`${iso}.${path}`]" />
               </td>
             </translationRow>
           </tbody>
@@ -101,46 +63,24 @@
 
       <!-- Edit window for one key -->
       <div v-if="editWordPath" id="edit-word-window-wrapper">
-        <div
-          @click="closeEdit"
-          style="display: absolut; left: 0; top: 0; width: 100%; height: 100%"
-        ></div>
+        <div @click="closeEdit" style="display: absolut; left: 0; top: 0; width: 100%; height: 100%"></div>
         <div id="edit-word-window-container">
           <div>
             <table>
-              <translation-word
-                v-for="iso in languages"
-                :key="iso"
-                :iso="iso"
-                :originalTranslation="
-                  defaultTranslationsFlat[`${iso}.${editWordPath}`]
-                "
-                :customTranslation="
-                  customTranslations[`${iso}.${editWordPath}`]
-                "
-              >
-                <textarea
-                  rows="5"
-                  cols="16"
-                  style="min-width: 200px"
-                  :value="customTranslations[`${iso}.${editWordPath}`]"
-                  :placeholder="
-                    defaultTranslationsFlat[`${iso}.${editWordPath}`]
-                  "
-                  @input="updateTranslation(iso, editWordPath, $event)"
-                />
+              <translation-word v-for="iso in languages" :key="iso" :iso="iso" :originalTranslation="defaultTranslationsFlat[`${iso}.${editWordPath}`]
+                " :customTranslation="customTranslations[`${iso}.${editWordPath}`]
+                  ">
+                <textarea rows="5" cols="16" style="min-width: 200px"
+                  :value="customTranslations[`${iso}.${editWordPath}`]" :placeholder="defaultTranslationsFlat[`${iso}.${editWordPath}`]
+                    " @input="updateTranslation(iso, editWordPath, $event)" />
               </translation-word>
             </table>
-            <div
-              style="
+            <div style="
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-              "
-            >
-              <span style="margin-right: 2rem; font-size: small"
-                >Changes get automatically saved</span
-              >
+              ">
+              <span style="margin-right: 2rem; font-size: small">Changes get automatically saved</span>
               <button class="btn" @click="closeEdit">Ok</button>
             </div>
           </div>
@@ -148,39 +88,19 @@
       </div>
 
       <!-- Export json -->
-      <div style="max-width: 540px">
-        <h2>Download results</h2>
-        <p>
-          Download the output file, which contains your custom translations.
-          Send it to us via email. We will check it and set it up for your
-          <strong>{{ projectName }}</strong
-          >.
-        </p>
-        <div style="display: flex; justify-content: space-between">
-          <button class="btn" @click="downloadResult">Download</button>
-          <div
-            v-if="showDownloadSrcFileSection"
-            style="display: flex; flex-wrap: nowrap"
-          >
-            <span
-              style="
+      <div style="display: flex; justify-content: space-between">
+        <button class="btn" @click="save">Save changes</button>
+        <div v-if="showDownloadSrcFileSection" style="display: flex; flex-wrap: nowrap">
+          <span style="
                 margin-right: 6px;
                 margin-top: auto;
                 margin-bottom: auto;
                 font-weight: 500;
-              "
-              >Download source file:</span
-            >
-            <button
-              v-for="iso in languages"
-              :key="iso"
-              @click="downloadResultAsSourceFile(iso)"
-              class="iso btn"
-              style="margin-left: 4px"
-            >
-              {{ iso }}
-            </button>
-          </div>
+              ">Download source file:</span>
+          <button v-for="iso in languages" :key="iso" @click="downloadResultAsSourceFile(iso)" class="iso btn"
+            style="margin-left: 4px">
+            {{ iso }}
+          </button>
         </div>
       </div>
     </div>
@@ -197,12 +117,13 @@ import {
   getUrlParameter,
   getBaseTranslationsUrl,
   loadJSON,
-  getProjectName
+  getProjectName,
+  getProjectCode
 } from '../static/js/main'
 import translationRow from '../components/translationRow.vue'
 
 export default {
-  data () {
+  data() {
     return {
       customTranslations: {},
       languages: ['de', 'en'],
@@ -220,7 +141,7 @@ export default {
     }
   },
 
-  created () {
+  created() {
     this.loadDefaultTranslations()
 
     // check for custom translations file
@@ -237,7 +158,7 @@ export default {
     }
   },
 
-  mounted () {
+  mounted() {
     // add listener for leave page warning
     const thisRef = this
     window.addEventListener('beforeunload', function (e) {
@@ -251,7 +172,7 @@ export default {
   },
 
   methods: {
-    async loadCustomTranslationsFromServer () {
+    async loadCustomTranslationsFromServer() {
       let obj = {}
       try {
         const url = `${this.baseUrl}custom/${this.customTranslationsFileName}`
@@ -267,7 +188,7 @@ export default {
       )
       this.setTranslationKeys()
     },
-    getHasUnsavedChanges () {
+    getHasUnsavedChanges() {
       const currentCustomTranslations = this.getEditedCustomTranslations()
       const loadedCustomTranslationsFlat = this.getEditedCustomTranslations(
         this.loadedCustomTranslationsFlat
@@ -276,13 +197,13 @@ export default {
       // compare currentCustomTranslations with loadedCustomTranslationsFlat
       // ignore the order of the keys
       const keys = []
-      ;[currentCustomTranslations, loadedCustomTranslationsFlat].forEach(
-        obj => {
-          Object.keys(obj).forEach(key => {
-            if (!keys.includes(key)) keys.push(key)
-          })
-        }
-      )
+        ;[currentCustomTranslations, loadedCustomTranslationsFlat].forEach(
+          obj => {
+            Object.keys(obj).forEach(key => {
+              if (!keys.includes(key)) keys.push(key)
+            })
+          }
+        )
       for (const key of keys) {
         const current = currentCustomTranslations[key]
         const loaded = loadedCustomTranslationsFlat[key]
@@ -290,17 +211,17 @@ export default {
       }
       return false
     },
-    setUpListenerForFileImport () {
+    setUpListenerForFileImport() {
       const thisRef = this
       document
         .getElementById('fileInput')
-        .addEventListener('change', function selectedFileChanged () {
+        .addEventListener('change', function selectedFileChanged() {
           if (this.files.length === 0) {
             console.log('No file selected.')
             return
           }
           const reader = new FileReader()
-          reader.onload = function fileReadCompleted () {
+          reader.onload = function fileReadCompleted() {
             // when the reader is done, the content is in reader.result.
             //console.log(reader.result);
             const str = reader.result //reader.readAsText(this.files[0]);
@@ -316,7 +237,7 @@ export default {
           reader.readAsText(this.files[0])
         })
     },
-    getEditedCustomTranslations (customTranslations) {
+    getEditedCustomTranslations(customTranslations) {
       if (!customTranslations) customTranslations = this.customTranslations
 
       // filter (original != custom translation)
@@ -331,7 +252,7 @@ export default {
       })
       return editedCustomTranslations
     },
-    downloadResult () {
+    downloadResult() {
       const editedCustomTranslations = this.getEditedCustomTranslations()
       const obj = nestTranslations(editedCustomTranslations)
       const fileName = this.customTranslationsFileName
@@ -339,7 +260,7 @@ export default {
         : 'translations'
       downloadObjectAsJson(obj, fileName)
     },
-    async loadDefaultTranslations () {
+    async loadDefaultTranslations() {
       this.setDefaultTranslations(null)
       const urls = this.allLanguages.map(
         iso => `${this.baseUrl}${iso}/translations.json`
@@ -354,19 +275,19 @@ export default {
       this.setDefaultTranslations(result)
       this.setTranslationKeys()
     },
-    openEdit (path) {
+    openEdit(path) {
       this.editWordPath = path
     },
-    closeEdit () {
+    closeEdit() {
       this.editWordPath = null
       // TODO: save progress in cookie / local storage
     },
-    setDefaultTranslations (value) {
+    setDefaultTranslations(value) {
       setDefaultTranslations(value)
       this.defaultTranslationsFlat = flattenTranslations(value || {})
       this.defaultTranslations = value
     },
-    setTranslationKeys () {
+    setTranslationKeys() {
       const getValueForEntry = (entry, currentPath) => {
         const [entryKey, entryValue] = entry
         const path =
@@ -415,18 +336,18 @@ export default {
       } else this.translationKeys = null
       this.translationRows = rows
     },
-    updateTranslation (iso, path, event) {
+    updateTranslation(iso, path, event) {
       this.customTranslations[`${iso}.${path}`] = event.target.value
       this.customTranslations = { ...this.customTranslations } // JSON.parse(JSON.stringify(this.customTranslations))
     },
-    languageSelectionChanged (iso) {
+    languageSelectionChanged(iso) {
       const isAlreadyInList = this.languages.includes(iso)
       this.languages = this.allLanguages.filter(x => {
         if (x === iso) return !isAlreadyInList
         else return this.languages.includes(x)
       })
     },
-    downloadResultAsSourceFile (iso) {
+    downloadResultAsSourceFile(iso) {
       const translations = {}
       Object.entries(this.customTranslations).forEach(([key, value]) => {
         if (!key.startsWith(iso)) return null
@@ -438,11 +359,23 @@ export default {
       })
       const obj = nestTranslations(translations)
       downloadObjectAsJson(obj[iso], iso)
+    },
+    save() {
+      const editedCustomTranslations = this.getEditedCustomTranslations()
+      const obj = nestTranslations(editedCustomTranslations)
+      const fileName = this.customTranslationsFileName
+        ? this.customTranslationsFileName.replace('.json', '')
+        : 'translations'
+      window.saveTranslations({
+        data: obj,
+        fileName,
+        project: getProjectCode()
+      })
     }
   },
 
   computed: {
-    isLoading () {
+    isLoading() {
       return this.defaultTranslations === null
     }
   }
