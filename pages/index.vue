@@ -367,7 +367,7 @@ export default {
         ? this.customTranslationsFileName.replace('.json', '')
         : 'translations'
       window.saveTranslations({
-        data: obj,
+        data: obj ?? {},
         fileName,
         project: getProjectCode()
       })
