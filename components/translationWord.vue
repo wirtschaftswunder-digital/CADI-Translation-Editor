@@ -6,12 +6,12 @@
     <td>
       <div class="translation-word-grid">
         <label>
-          <b>Original translation:</b>
+          <b>Original:</b>
           <span class="original-translation">{{ originalTranslation }}</span>
         </label>
 
         <label>
-          <b>Your translation:</b>
+          <b>Dein Text:</b>
           <slot></slot>
         </label>
       </div>

@@ -19,11 +19,11 @@
 
       <!-- Edit -->
       <div>
-        <h2>Edit translations</h2>
         <div id="column-selection">
           <label v-for="iso in allLanguages" :key="iso">
             <input type="checkbox" :name="iso" :checked="languages.includes(iso)"
               @input="languageSelectionChanged(iso)" />
+            &nbsp;
             <span class="iso">
               {{ iso }}
             </span>
@@ -80,8 +80,7 @@
                 justify-content: space-between;
                 align-items: center;
               ">
-              <span style="margin-right: 2rem; font-size: small">Changes get automatically saved</span>
-              <button class="btn" @click="closeEdit">Ok</button>
+              <button style="margin-left: auto" class="btn" @click="closeEdit">Okay</button>
             </div>
           </div>
         </div>
@@ -89,14 +88,14 @@
 
       <!-- Export json -->
       <div style="display: flex; justify-content: space-between">
-        <button class="btn" @click="save">Save changes</button>
+        <button class="btn" @click="save">Speichern</button>
         <div v-if="showDownloadSrcFileSection" style="display: flex; flex-wrap: nowrap">
           <span style="
                 margin-right: 6px;
                 margin-top: auto;
                 margin-bottom: auto;
                 font-weight: 500;
-              ">Download source file:</span>
+              ">Quelldatei Download:</span>
           <button v-for="iso in languages" :key="iso" @click="downloadResultAsSourceFile(iso)" class="iso btn"
             style="margin-left: 4px">
             {{ iso }}
