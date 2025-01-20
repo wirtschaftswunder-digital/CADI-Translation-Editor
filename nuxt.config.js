@@ -33,7 +33,7 @@ export default {
   },
 
   toast: {
-    position: 'bottom-right',
+    position: 'bottom-left',
     duration: 5000
   },
 
