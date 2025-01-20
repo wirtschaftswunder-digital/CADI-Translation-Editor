@@ -7,17 +7,6 @@
 
     <!-- editor -->
     <div v-show="!isLoading" style="display: grid; gap: 5rem">
-      <!-- project selection -->
-      <!-- 
-      <div>
-        <p>
-          You are editing translations for the <strong>{{ projectName }}</strong>. Switch project:
-        </p>
-        <switch-project-button />
-      </div>
-       -->
-
-      <!-- Edit -->
       <div>
         <div id="column-selection">
           <label v-for="iso in allLanguages" :key="iso">
