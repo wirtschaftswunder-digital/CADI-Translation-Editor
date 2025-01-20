@@ -20,6 +20,10 @@ export default {
     fallback: '404.html'
   },
 
+  publicRuntimeConfig: {
+    travelAppUrl: process.env.TRAVEL_APP_URL || 'http://localhost:3003',
+  },
+
   build: {
     publicPath:
       process.env.NODE_ENV === 'production'

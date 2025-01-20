@@ -135,28 +135,20 @@ export default {
       editWordPath: null,
       originalTranslationColumnIso: 'de',
       customTranslationsFileName: null,
-      showFileImport: false,
       showDownloadSrcFileSection: !getUrlParameter('anbieterId'),
       projectName: getProjectName()
     }
   },
 
   created() {
-    fetch("http://localhost:3003/travel/admin/upload_translations/get_json?project=bm").then(console.log)
     this.loadDefaultTranslations()
 
     // check for custom translations file
     const anbieterId = getUrlParameter('anbieterId')
     const subdomain = getUrlParameter('subdomain')
-    if (subdomain && anbieterId) {
-      this.showFileImport = false
-      this.customTranslationsFileName =
-        `${subdomain}_${anbieterId}.json`.toLowerCase()
-      this.loadCustomTranslationsFromServer()
-    } else {
-      this.showFileImport = true
-      this.$nextTick().then(this.setUpListenerForFileImport)
-    }
+    this.customTranslationsFileName =
+      `${subdomain}_${anbieterId}.json`.toLowerCase()
+    this.loadCustomTranslationsFromServer()
   },
 
   mounted() {
@@ -176,9 +168,11 @@ export default {
     async loadCustomTranslationsFromServer() {
       let obj = {}
       try {
-        const url = `${this.baseUrl}custom/${this.customTranslationsFileName}`
-        const response = await loadJSON(url)
-        if (Object.keys(response).length > 0) obj = response
+        const travelAppRes = await fetch(`${this.$config.travelAppUrl}/travel/admin/upload_translations/get_json?project${getProjectCode()}`, { mode: 'cors' })
+        const travelAppResJson = await travelAppRes.json()
+        if (!travelAppResJson.data)
+          throw new Error('No data in response')
+        obj = travelAppResJson.data
       } catch (error) {
         obj = {}
         console.error(error)
@@ -211,32 +205,6 @@ export default {
         if (current !== loaded) return true
       }
       return false
-    },
-    setUpListenerForFileImport() {
-      const thisRef = this
-      document
-        .getElementById('fileInput')
-        .addEventListener('change', function selectedFileChanged() {
-          if (this.files.length === 0) {
-            console.log('No file selected.')
-            return
-          }
-          const reader = new FileReader()
-          reader.onload = function fileReadCompleted() {
-            // when the reader is done, the content is in reader.result.
-            //console.log(reader.result);
-            const str = reader.result //reader.readAsText(this.files[0]);
-            const obj = JSON.parse(str)
-            if (obj && typeof obj === 'object') {
-              thisRef.customTranslations = flattenTranslations(obj)
-              thisRef.loadedCustomTranslationsFlat = JSON.parse(
-                JSON.stringify(thisRef.customTranslations)
-              )
-              thisRef.setTranslationKeys()
-            }
-          }
-          reader.readAsText(this.files[0])
-        })
     },
     getEditedCustomTranslations(customTranslations) {
       if (!customTranslations) customTranslations = this.customTranslations
