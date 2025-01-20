@@ -77,7 +77,7 @@
 
       <!-- Export json -->
       <div style="display: flex; justify-content: space-between">
-        <button class="btn" @click="save">Speichern</button>
+        <button class="btn" @click="() => save()">Speichern</button>
         <div v-if="showDownloadSrcFileSection" style="display: flex; flex-wrap: nowrap">
           <span style="
                 margin-right: 6px;
@@ -128,7 +128,7 @@ export default {
   },
 
   created() {
-    this.loadCustomTranslationsFromServer().then(this.loadDefaultTranslations)
+    this.loadCustomTranslationsFromServer().finally(this.loadDefaultTranslations)
   },
 
   mounted() {
@@ -319,7 +319,14 @@ export default {
         fileName,
         project: getProjectCode()
       })
-        .then(this.loadCustomTranslationsFromServer)  // reload translations to compute unsaved changes
+        .then(() => {
+          this.$toast.success('Änderungen gespeichert')
+          this.loadCustomTranslationsFromServer() // reload translations to compute unsaved changes
+        })
+        .catch(error => {
+          console.error(error)
+          this.$toast.error('Fehler beim Speichern')
+        })
     }
   },
 

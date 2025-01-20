@@ -21,7 +21,7 @@ export default {
   },
 
   publicRuntimeConfig: {
-    travelAppUrl: process.env.TRAVEL_APP_URL || 'http://localhost:3003',
+    travelAppUrl: process.env.TRAVEL_APP_URL || 'http://localhost:3003'
   },
 
   build: {
@@ -32,9 +32,14 @@ export default {
         : undefined
   },
 
+  toast: {
+    position: 'bottom-right',
+    duration: 5000
+  },
+
   components: {
     dirs: ['~/components']
   },
 
-  modules: ['@nuxtjs/axios']
+  modules: ['@nuxtjs/axios', '@nuxtjs/toast']
 }
