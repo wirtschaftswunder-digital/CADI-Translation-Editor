@@ -241,7 +241,6 @@ export default {
     },
     closeEdit() {
       this.editWordPath = null
-      // TODO: save progress in cookie / local storage
     },
     setDefaultTranslations(value) {
       setDefaultTranslations(value)
