@@ -333,6 +333,7 @@ export default {
         fileName,
         project: getProjectCode()
       })
+        .then(this.loadCustomTranslationsFromServer)  // reload translations to compute unsaved changes
     }
   },
 
