@@ -108,7 +108,6 @@ import {
   getProjectName,
   getProjectCode
 } from '../static/js/main'
-import translationRow from '../components/translationRow.vue'
 
 export default {
   data() {
