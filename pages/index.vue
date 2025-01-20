@@ -167,9 +167,9 @@ export default {
   methods: {
     async loadCustomTranslationsFromServer() {
       let obj = {}
+      const url = `${this.$config.travelAppUrl}/travel/admin/upload_translations/get_json?project=${getProjectCode()}`
       try {
-        const travelAppRes = await fetch(`${this.$config.travelAppUrl}/travel/admin/upload_translations/get_json?project${getProjectCode()}`, { mode: 'cors' })
-        const travelAppResJson = await travelAppRes.json()
+        const travelAppResJson = await loadJSON(url)
         if (!travelAppResJson.data)
           throw new Error('No data in response')
         obj = travelAppResJson.data
