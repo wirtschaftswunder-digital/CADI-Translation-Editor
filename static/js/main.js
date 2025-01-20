@@ -41,15 +41,6 @@ export function setDefaultTranslations (value) {
   defaultTranslations = value
 }
 
-export function getDefaultTranslations () {
-  try {
-    fetch("http://localhost:3003/travel/admin/upload_translations/get_json?project=bm").then(console.log)
-  } catch (error) {
-    console.error(error);
-  }
-  return defaultTranslations
-}
-
 export function flattenTranslations (obj) {
   const result = {}
 
@@ -146,14 +137,8 @@ function insertParam (key, value) {
       break
     }
   }
-
-  if (i >= kvp.length) {
+  if (i >= kvp.length)
     kvp[kvp.length] = [key, value].join('=')
-  }
-
-  // can return this or...
   let params = kvp.join('&')
-
-  // reload page with new params
-  document.location.search = params
+  document.location.search = params  // reload page with new params
 }
