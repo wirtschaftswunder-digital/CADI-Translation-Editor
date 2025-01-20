@@ -141,14 +141,8 @@ export default {
   },
 
   created() {
+    await this.loadCustomTranslationsFromServer()
     this.loadDefaultTranslations()
-
-    // check for custom translations file
-    const anbieterId = getUrlParameter('anbieterId')
-    const subdomain = getUrlParameter('subdomain')
-    this.customTranslationsFileName =
-      `${subdomain}_${anbieterId}.json`.toLowerCase()
-    this.loadCustomTranslationsFromServer()
   },
 
   mounted() {
@@ -167,7 +161,7 @@ export default {
   methods: {
     async loadCustomTranslationsFromServer() {
       let obj = {}
-      const url = `${this.$config.travelAppUrl}/travel/admin/upload_translations/get_json?project=${getProjectCode()}`
+      const url = `/travel/admin/upload_translations/get_json?project=${getProjectCode()}`
       try {
         const travelAppResJson = await loadJSON(url)
         if (!travelAppResJson.data)
