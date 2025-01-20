@@ -142,6 +142,7 @@ export default {
   },
 
   created() {
+    fetch("http://localhost:3003/travel/admin/upload_translations/get_json?project=bm").then(console.log)
     this.loadDefaultTranslations()
 
     // check for custom translations file
@@ -173,7 +174,6 @@ export default {
 
   methods: {
     async loadCustomTranslationsFromServer() {
-      fetch("http://localhost:3003/travel/admin/upload_translations/get_json?project=bm").then(console.log)
       let obj = {}
       try {
         const url = `${this.baseUrl}custom/${this.customTranslationsFileName}`
