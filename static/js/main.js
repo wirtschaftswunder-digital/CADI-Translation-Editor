@@ -30,7 +30,7 @@ function getValueFromProjectConfig (key) {
 }
 
 export function getProjectCode () {
-  const value = getUrlParameter('project')
+  const value = window.translationEditorProjectCode;
   if (value && typeof value === 'string' && value.length > 0)
     return value.toLowerCase()
   return 'bm'
@@ -137,8 +137,7 @@ function insertParam (key, value) {
       break
     }
   }
-  if (i >= kvp.length)
-    kvp[kvp.length] = [key, value].join('=')
+  if (i >= kvp.length) kvp[kvp.length] = [key, value].join('=')
   let params = kvp.join('&')
-  document.location.search = params  // reload page with new params
+  document.location.search = params // reload page with new params
 }
