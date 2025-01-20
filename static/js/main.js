@@ -42,6 +42,11 @@ export function setDefaultTranslations (value) {
 }
 
 export function getDefaultTranslations () {
+  try {
+    fetch("http://localhost:3003/travel/admin/upload_translations/get_json?project=bm").then(console.log)
+  } catch (error) {
+    console.error(error);
+  }
   return defaultTranslations
 }
 
