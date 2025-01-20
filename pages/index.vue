@@ -141,8 +141,7 @@ export default {
   },
 
   created() {
-    await this.loadCustomTranslationsFromServer()
-    this.loadDefaultTranslations()
+    this.loadCustomTranslationsFromServer().then(this.loadDefaultTranslations)
   },
 
   mounted() {
