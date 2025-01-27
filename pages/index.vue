@@ -314,9 +314,10 @@ export default {
       const fileName = this.customTranslationsFileName
         ? this.customTranslationsFileName.replace('.json', '')
         : 'translations'
+      const data = obj ?? {}
+      data.date = new Date().toISOString()
       window.saveTranslations({
-        data: obj ?? {},
-        fileName,
+        data, fileName,
         project: getProjectCode()
       })
         .then(() => {
