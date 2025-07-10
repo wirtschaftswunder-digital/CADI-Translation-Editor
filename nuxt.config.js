@@ -6,23 +6,11 @@ export default {
   mode: 'spa',
 
   head: {
-    //script: [{ src: 'https://code.jquery.com/jquery-3.6.0.min.js' }]
-    //script: [{ src: 'https://code.jquery.com/jquery-1.12.4.min.js' }]
   },
 
   router: {
     base: process.env.ROUTER_BASE || '/CADI-Translation-Editor/'
   },
-
-  // serverMiddleware: [
-  //   (req, res, next) => {
-  //     res.setHeader('Access-Control-Allow-Origin', '*')
-  //     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  //     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  //     res.setHeader('Access-Control-Allow-Credentials', 'true')
-  //     next()
-  //   }
-  // ],
 
   css: ['~/assets/css/main.css'],
 

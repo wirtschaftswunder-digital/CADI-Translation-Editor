@@ -94,30 +94,6 @@ export function getRequiredUrlParameter (parameterName) {
 
 export function loadJSON (url) {
   return new Promise((resolve, reject) => fetch(url).then(r => resolve(r.json())).catch(e => reject(e)))
-  // return new Promise((resolve, reject) => {
-  //   $.ajax({
-  //     url: url,
-  //     dataType: 'json',
-  //     success: response => {
-  //       try {
-  //         if (typeof response === 'string') {
-  //           resolve(JSON.parse(response))
-  //         } else if (typeof response === 'object') {
-  //           resolve(response)
-  //         } else {
-  //           resolve({})
-  //         }
-  //       } catch (error) {
-  //         console.error(error)
-  //         resolve({})
-  //       }
-  //     },
-  //     error: error => {
-  //       reject(error)
-  //     }
-  //   })
-  // })
-
 }
 
 export function setUrlParameter (parameterName, parameterValue) {
